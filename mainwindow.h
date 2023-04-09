@@ -8,6 +8,7 @@
 #include <QGraphicsScene>
 #include <QPainter>
 #include <QApplication>
+#include <QCoreApplication>
 #include <QDebug>
 #include <QFileDialog>
 #include <QMediaPlayer>
@@ -15,6 +16,8 @@
 #include <QMediaMetaData>
 #include <QTime>
 #include <QtMath>
+#include <QSettings>
+#include <QCloseEvent>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -29,6 +32,9 @@ public:
     ~MainWindow();
     void stateChanged(QMediaPlayer::PlaybackState state);
     void positionChanged(qint64 position);
+
+protected:
+    void closeEvent(QCloseEvent *event) override;
 
 private slots:
 
@@ -54,9 +60,17 @@ private:
     QAudioOutput* audio_output;
     QPixmap* default_background;
 
+    QSettings ini_settings;
+    QString default_file_dir;
+
     bool volume_button_clicked;
     bool play_button_clicked;
     float cached_volume;
+    int last_position;
+
+    float volumeConvert(int value);
+    void writeSettings();
+    void readSettings();
 };
 
 #endif // MAINWINDOW_H

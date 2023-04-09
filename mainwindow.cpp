@@ -6,17 +6,27 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
     , volume_button_clicked(false)
     , play_button_clicked(false)
-    , cached_volume(0)
-{
+    , cached_volume(0.0f)
+{  
+    QApplication::setApplicationName("myMusicPlayer");
+    QApplication::setOrganizationName("CrystallisR");
+    QSettings::setDefaultFormat(QSettings::IniFormat);
+
+    readSettings();
     ui->setupUi(this);
 
     // player init
     audio_player = new QMediaPlayer(this);
     audio_output = new QAudioOutput(this);
     audio_player->setAudioOutput(audio_output);
-    audio_output->setVolume(ui->volumeSlider->value());
+
     connect(audio_player, &QMediaPlayer::playbackStateChanged, this, &MainWindow::stateChanged);
     connect(audio_player, &QMediaPlayer::positionChanged, this, &MainWindow::positionChanged);
+
+    // default parameter setting
+    ui->volumeSlider->setValue(last_position);
+    audio_output->setVolume(volumeConvert(ui->volumeSlider->value()));
+    ui->volumeDisplay->setText(QString::number(ui->volumeSlider->value()) + "%");
 
     // ui setting
     setWindowIcon(QIcon(":icons/res/musical_notec.png"));
@@ -37,8 +47,10 @@ MainWindow::MainWindow(QWidget *parent)
 MainWindow::~MainWindow()
 {
     delete ui;
+    delete default_background;
+    delete audio_output;
+    delete audio_player;
 }
-
 
 void MainWindow::stateChanged(QMediaPlayer::PlaybackState state)
 {
@@ -125,12 +137,10 @@ void MainWindow::on_progressSlider_sliderMoved(int position)
 
 
 void MainWindow::on_volumeSlider_sliderMoved(int position)
-{ // using exponential on volume percent to produce linear changes in perceived loudness
-    assert(position <= 100);
-    float percent = static_cast<float>(position) / 100.0f;
-    float new_volume = (qExp<float>(percent) - 1.0f) / (qExp<float>(1.0f) - 1.0f);
-    audio_output->setVolume(new_volume);
-    ui->volumeDisplay->setText(QString::number(static_cast<int>(percent * 100)) + "%");
+{
+    audio_output->setVolume(volumeConvert(position));
+    ui->volumeDisplay->setText(QString::number(position) + "%");
+    last_position = position;
 }
 
 
@@ -138,20 +148,23 @@ void MainWindow::on_actionOpen_File_triggered()
 {
     QString prompt = "Please Select Your Audio File";
     QString file_format {"MP3 (*.mp3);;WAV (*.wav);;FLAC (*.flac);;AAC (*.acc)"};
-    QString file_name = QFileDialog::getOpenFileName(this, prompt, qApp->applicationDirPath(), file_format);
+    QString file_dir = default_file_dir == "" ? qApp->applicationDirPath() : default_file_dir;
+    QString file_name = QFileDialog::getOpenFileName(this, prompt, file_dir, file_format);
     QFileInfo file_info(file_name);
+    if (file_info.absolutePath() != "") default_file_dir = file_info.absolutePath();
 
     audio_player->setSource(QUrl::fromLocalFile(file_name));
 
     if (1)
-    {
-        ui->musicNameDisplay->setText("Playing "+ file_info.fileName() + "...");
+    {// attempt to read meta data
+        ui->musicNameDisplay->setText("Playing <"+ file_info.fileName() + ">...");
     }
     else
     {
-        ui->musicNameDisplay->setText("Playing "+ file_info.fileName() + "...");
+        ui->musicNameDisplay->setText("Playing <"+ file_info.fileName() + ">...");
     }
 
+    if (play_button_clicked) ui->playButton->click();
     ui->playButton->setEnabled(true);
     ui->playButton->click();
 }
@@ -165,5 +178,35 @@ void MainWindow::on_actionImport_Music_Resources_triggered()
 void MainWindow::on_actionSet_Appearance_triggered()
 {
     this->setProperty("windowOpacity", 1.0);
+}
+
+// private
+float MainWindow::volumeConvert(int value)
+{// using exponential on volume percent to produce linear changes in perceived loudness
+    if (value < 0) return 0.0f;
+    if (value > 100) return 1.0f;
+    float percent = static_cast<float>(value) / 100.0f;
+    float converted_volume = (qExp<float>(percent) - 1.0f) / (qExp<float>(1.0f) - 1.0f);
+    return converted_volume;
+}
+
+void MainWindow::writeSettings()
+{
+    QSettings settings;
+    settings.setValue("file/default_dir", default_file_dir);
+    settings.setValue("file/last_volume_pos", last_position);
+}
+
+void MainWindow::readSettings()
+{
+    QSettings settings;
+    default_file_dir = settings.value("file/default_dir", "").toString();
+    last_position = settings.value("file/last_volume_pos", 25).toInt();
+}
+
+void MainWindow::closeEvent(QCloseEvent *event)
+{
+    writeSettings();
+    event->accept();
 }
 
