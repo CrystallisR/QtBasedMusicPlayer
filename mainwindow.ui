@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
-    <height>600</height>
+    <width>451</width>
+    <height>456</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -20,26 +20,67 @@
      <verstretch>0</verstretch>
     </sizepolicy>
    </property>
-   <layout class="QVBoxLayout" name="verticalLayout_2" stretch="5,5">
-    <property name="spacing">
-     <number>10</number>
-    </property>
+   <property name="styleSheet">
+    <string notr="true">background-color: rgb(234, 229, 255);</string>
+   </property>
+   <layout class="QVBoxLayout" name="verticalLayout_2">
     <item>
-     <layout class="QHBoxLayout" name="horizontalLayout_3">
+     <layout class="QHBoxLayout" name="horizontalLayout_3" stretch="2,0,3">
       <item>
-       <widget class="QGraphicsView" name="graphicsView"/>
+       <widget class="QLabel" name="musicGraphics">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Ignored" vsizetype="Ignored">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>999</width>
+          <height>999</height>
+         </size>
+        </property>
+        <property name="layoutDirection">
+         <enum>Qt::LeftToRight</enum>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="pixmap">
+         <pixmap resource="icons.qrc">:/icons/res/musical_notec.png</pixmap>
+        </property>
+        <property name="scaledContents">
+         <bool>true</bool>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
       </item>
       <item>
-       <widget class="QTextBrowser" name="textBrowser"/>
+       <spacer name="horizontalSpacer_2">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>20</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
+       <widget class="QListView" name="musicListView"/>
       </item>
      </layout>
     </item>
     <item>
-     <layout class="QVBoxLayout" name="verticalLayout" stretch="1,2,0">
+     <layout class="QVBoxLayout" name="verticalLayout" stretch="1,2,3">
       <item>
        <widget class="QLabel" name="musicNameDisplay">
         <property name="text">
-         <string>song</string>
+         <string/>
         </property>
        </widget>
       </item>
@@ -47,6 +88,66 @@
        <layout class="QHBoxLayout" name="horizontalLayout">
         <item>
          <widget class="QSlider" name="progressSlider">
+          <property name="cursor">
+           <cursorShape>ClosedHandCursor</cursorShape>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">QSlider {
+    height: 64px;
+}
+
+QSlider::groove:horizontal {
+border: 1px solid #bbb;
+background: white;
+height: 18px;
+border-radius: 4px;
+}
+
+QSlider::sub-page:horizontal {
+background: qlineargradient(x1: 0, y1: 0,    x2: 0, y2: 1,
+    stop: 0 #66e, stop: 1 #bbf);
+background: qlineargradient(x1: 0, y1: 0.2, x2: 1, y2: 1,
+    stop: 0 #bbf, stop: 1 #55f);
+border: 1px solid #777;
+height: 10px;
+border-radius: 4px;
+}
+
+QSlider::add-page:horizontal {
+background: #fff;
+border: 1px solid #777;
+height: 10px;
+border-radius: 4px;
+}
+
+QSlider::handle:horizontal {
+image: url(:/icons/res/music_note_r1.png);
+width: 26px;
+margin-top: -2px;
+margin-bottom: -2px;
+border-radius: 4px;
+}
+
+QSlider::handle:horizontal:hover {
+
+}
+
+QSlider::sub-page:horizontal:disabled {
+background: #bbb;
+border-color: #999;
+}
+
+QSlider::add-page:horizontal:disabled {
+background: #eee;
+border-color: #999;
+}
+
+QSlider::handle:horizontal:disabled {
+background: #eee;
+border: 1px solid #aaa;
+border-radius: 4px;
+}</string>
+          </property>
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
           </property>
@@ -64,13 +165,16 @@
       <item>
        <layout class="QHBoxLayout" name="horizontalLayout_2">
         <item>
-         <widget class="QPushButton" name="pauseButton">
+         <widget class="QPushButton" name="backwardButton">
+          <property name="cursor">
+           <cursorShape>PointingHandCursor</cursorShape>
+          </property>
           <property name="text">
            <string/>
           </property>
           <property name="icon">
            <iconset resource="icons.qrc">
-            <normaloff>:/icons/res/pause.png</normaloff>:/icons/res/pause.png</iconset>
+            <normaloff>:/icons/res/back.png</normaloff>:/icons/res/back.png</iconset>
           </property>
           <property name="iconSize">
            <size>
@@ -82,6 +186,9 @@
         </item>
         <item>
          <widget class="QPushButton" name="playButton">
+          <property name="cursor">
+           <cursorShape>PointingHandCursor</cursorShape>
+          </property>
           <property name="text">
            <string/>
           </property>
@@ -98,7 +205,30 @@
          </widget>
         </item>
         <item>
+         <widget class="QPushButton" name="forwardButton">
+          <property name="cursor">
+           <cursorShape>PointingHandCursor</cursorShape>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+          <property name="icon">
+           <iconset resource="icons.qrc">
+            <normaloff>:/icons/res/next.png</normaloff>:/icons/res/next.png</iconset>
+          </property>
+          <property name="iconSize">
+           <size>
+            <width>40</width>
+            <height>40</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+        <item>
          <widget class="QPushButton" name="stopButton">
+          <property name="cursor">
+           <cursorShape>PointingHandCursor</cursorShape>
+          </property>
           <property name="text">
            <string/>
           </property>
@@ -129,6 +259,25 @@
         </item>
         <item>
          <widget class="QPushButton" name="volumeButton">
+          <property name="cursor">
+           <cursorShape>PointingHandCursor</cursorShape>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">QPushButton {
+	border: 5px solid #6A5ACD;
+	border-radius: 30px;
+	border-style: outset;
+	background-color:  #6A5ACD;
+	padding: 5px;
+}
+QPushButton:hover {
+	border: 5px solid #1E90FF;
+	border-radius: 30px;
+	border-style: outset;
+	background-color: #1E90FF;
+	padding: 5px;
+}</string>
+          </property>
           <property name="text">
            <string/>
           </property>
@@ -146,6 +295,66 @@
         </item>
         <item>
          <widget class="QSlider" name="volumeSlider">
+          <property name="cursor">
+           <cursorShape>ClosedHandCursor</cursorShape>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">QSlider {
+    height: 64px;
+}
+
+QSlider::groove:horizontal {
+border: 1px solid #bbb;
+background: white;
+height: 10px;
+border-radius: 4px;
+}
+
+QSlider::sub-page:horizontal {
+background: qlineargradient(x1: 0, y1: 0,    x2: 0, y2: 1,
+    stop: 0 #66e, stop: 1 #bbf);
+background: qlineargradient(x1: 0, y1: 0.2, x2: 1, y2: 1,
+    stop: 0 #bbf, stop: 1 #55f);
+border: 1px solid #777;
+height: 10px;
+border-radius: 4px;
+}
+
+QSlider::add-page:horizontal {
+background: #fff;
+border: 1px solid #777;
+height: 10px;
+border-radius: 4px;
+}
+
+QSlider::handle:horizontal {
+	image: url(:/icons/res/star_shining.png);
+width: 12px;
+margin-top: -2px;
+margin-bottom: -2px;
+border-radius: 4px;
+}
+
+QSlider::handle:horizontal:hover {
+
+}
+
+QSlider::sub-page:horizontal:disabled {
+background: #bbb;
+border-color: #999;
+}
+
+QSlider::add-page:horizontal:disabled {
+background: #eee;
+border-color: #999;
+}
+
+QSlider::handle:horizontal:disabled {
+background: #eee;
+border: 1px solid #aaa;
+border-radius: 4px;
+}</string>
+          </property>
           <property name="maximum">
            <number>100</number>
           </property>
@@ -154,6 +363,40 @@
           </property>
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="volumeDisplay">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>40</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>40</width>
+            <height>16777215</height>
+           </size>
+          </property>
+          <property name="cursor">
+           <cursorShape>ArrowCursor</cursorShape>
+          </property>
+          <property name="mouseTracking">
+           <bool>false</bool>
+          </property>
+          <property name="text">
+           <string>20%</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
           </property>
          </widget>
         </item>
@@ -168,7 +411,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>800</width>
+     <width>451</width>
      <height>25</height>
     </rect>
    </property>
@@ -179,11 +422,48 @@
     <addaction name="separator"/>
     <addaction name="actionOpen_File"/>
    </widget>
+   <widget class="QMenu" name="menuImport">
+    <property name="title">
+     <string>Import</string>
+    </property>
+    <addaction name="actionImport_Music_Resources"/>
+   </widget>
+   <widget class="QMenu" name="menuSettings">
+    <property name="title">
+     <string>Settings</string>
+    </property>
+    <addaction name="separator"/>
+    <addaction name="actionSet_Appearance"/>
+   </widget>
    <addaction name="menuFile"/>
+   <addaction name="menuImport"/>
+   <addaction name="menuSettings"/>
   </widget>
   <action name="actionOpen_File">
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/icons/res/open_folder_purple.png</normaloff>:/icons/res/open_folder_purple.png</iconset>
+   </property>
    <property name="text">
     <string>Open File</string>
+   </property>
+  </action>
+  <action name="actionImport_Music_Resources">
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/icons/res/musical_notec.png</normaloff>:/icons/res/musical_notec.png</iconset>
+   </property>
+   <property name="text">
+    <string>Import Music Resources</string>
+   </property>
+  </action>
+  <action name="actionSet_Appearance">
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/icons/res/star_shining.png</normaloff>:/icons/res/star_shining.png</iconset>
+   </property>
+   <property name="text">
+    <string>Appearance</string>
    </property>
   </action>
  </widget>

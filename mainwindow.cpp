@@ -5,6 +5,7 @@ MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
     , volume_button_clicked(false)
+    , play_button_clicked(false)
     , cached_volume(0)
 {
     ui->setupUi(this);
@@ -17,6 +18,20 @@ MainWindow::MainWindow(QWidget *parent)
     connect(audio_player, &QMediaPlayer::playbackStateChanged, this, &MainWindow::stateChanged);
     connect(audio_player, &QMediaPlayer::positionChanged, this, &MainWindow::positionChanged);
 
+    // ui setting
+    setWindowIcon(QIcon(":icons/res/musical_notec.png"));
+    default_background = new QPixmap(":icons/res/musical_notec.png");
+    this->setProperty("windowOpacity", 1.0);
+
+    // set stylesheet
+    QString button_style1 = ui->volumeButton->styleSheet();
+
+    for (auto button: \
+    {ui->playButton, ui->stopButton, ui->volumeButton, ui->backwardButton, ui->forwardButton})
+        button->setStyleSheet(button_style1);
+
+    ui->playButton->setEnabled(false);
+    ui->stopButton->setEnabled(false);
 }
 
 MainWindow::~MainWindow()
@@ -29,20 +44,17 @@ void MainWindow::stateChanged(QMediaPlayer::PlaybackState state)
 {
     if (state == QMediaPlayer::PlayingState)
     {
-        ui->playButton->setEnabled(false);
-        ui->pauseButton->setEnabled(true);
+        ui->playButton->setEnabled(true);
         ui->stopButton->setEnabled(true);
     }
     else if (state == QMediaPlayer::PausedState)
     {
         ui->playButton->setEnabled(true);
-        ui->pauseButton->setEnabled(false);
         ui->stopButton->setEnabled(true);
     }
     else if (state == QMediaPlayer::StoppedState)
     {
         ui->playButton->setEnabled(true);
-        ui->pauseButton->setEnabled(false);
         ui->stopButton->setEnabled(false);
     }
 }
@@ -62,21 +74,28 @@ void MainWindow::positionChanged(qint64 position)
     ui->durationDisplay->setText(time.toString());
 }
 
-void MainWindow::on_pauseButton_clicked()
-{
-    audio_player->pause();
-}
-
 
 void MainWindow::on_playButton_clicked()
 {
-    audio_player->play();
+    play_button_clicked = !play_button_clicked;
+    if (play_button_clicked)
+    {
+        audio_player->play();
+        ui->playButton->setIcon(QIcon(":/icons/res/pause.png"));
+    }
+    else
+    {
+        audio_player->pause();
+        ui->playButton->setIcon(QIcon(":/icons/res/play.png"));
+    }
 }
 
 
 void MainWindow::on_stopButton_clicked()
 {
     audio_player->stop();
+    play_button_clicked = false;
+    ui->playButton->setIcon(QIcon(":/icons/res/play.png"));
 }
 
 
@@ -88,11 +107,13 @@ void MainWindow::on_volumeButton_clicked()
         cached_volume = audio_output->volume();
         audio_output->setVolume(0);
         ui->volumeButton->setIcon(QIcon(":/icons/res/volume_mute.png"));
+        ui->volumeDisplay->setText("0%");
     }
     else
     {
         audio_output->setVolume(cached_volume);
         ui->volumeButton->setIcon(QIcon(":/icons/res/volume.png"));
+        ui->volumeDisplay->setText(QString::number(static_cast<int>(cached_volume * 100)) + "%");
     }
 }
 
@@ -109,6 +130,7 @@ void MainWindow::on_volumeSlider_sliderMoved(int position)
     float percent = static_cast<float>(position) / 100.0f;
     float new_volume = (qExp<float>(percent) - 1.0f) / (qExp<float>(1.0f) - 1.0f);
     audio_output->setVolume(new_volume);
+    ui->volumeDisplay->setText(QString::number(static_cast<int>(percent * 100)) + "%");
 }
 
 
@@ -134,5 +156,14 @@ void MainWindow::on_actionOpen_File_triggered()
     ui->playButton->click();
 }
 
+void MainWindow::on_actionImport_Music_Resources_triggered()
+{
 
+}
+
+
+void MainWindow::on_actionSet_Appearance_triggered()
+{
+    this->setProperty("windowOpacity", 1.0);
+}
 

@@ -3,7 +3,9 @@
 
 #include <QMainWindow>
 #include <QFileDialog>
+#include <QInputDialog>
 #include <QPixmap>
+#include <QGraphicsScene>
 #include <QPainter>
 #include <QApplication>
 #include <QDebug>
@@ -30,9 +32,6 @@ public:
 
 private slots:
 
-
-    void on_pauseButton_clicked();
-
     void on_playButton_clicked();
 
     void on_stopButton_clicked();
@@ -45,12 +44,18 @@ private slots:
 
     void on_volumeButton_clicked();
 
+    void on_actionImport_Music_Resources_triggered();
+
+    void on_actionSet_Appearance_triggered();
+
 private:
     Ui::MainWindow *ui;
     QMediaPlayer* audio_player;
     QAudioOutput* audio_output;
+    QPixmap* default_background;
 
     bool volume_button_clicked;
+    bool play_button_clicked;
     float cached_volume;
 };
 

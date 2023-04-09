@@ -8,5 +8,9 @@
         <file>res/musical_notec.png</file>
         <file>res/volume_mute.png</file>
         <file>res/stop_button.png</file>
+        <file>res/open_folder_purple.png</file>
+        <file>res/star_shining.png</file>
+        <file>res/music_note_r1.png</file>
+        <file>res/musical-note.png</file>
     </qresource>
 </RCC>
