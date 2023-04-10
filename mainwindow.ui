@@ -174,7 +174,7 @@ border-radius: 4px;
           </property>
           <property name="icon">
            <iconset resource="icons.qrc">
-            <normaloff>:/icons/res/back.png</normaloff>:/icons/res/back.png</iconset>
+            <normaloff>:/icons/res/back_w.png</normaloff>:/icons/res/back_w.png</iconset>
           </property>
           <property name="iconSize">
            <size>
@@ -194,7 +194,7 @@ border-radius: 4px;
           </property>
           <property name="icon">
            <iconset resource="icons.qrc">
-            <normaloff>:/icons/res/play.png</normaloff>:/icons/res/play.png</iconset>
+            <normaloff>:/icons/res/play_w.png</normaloff>:/icons/res/play_w.png</iconset>
           </property>
           <property name="iconSize">
            <size>
@@ -214,7 +214,7 @@ border-radius: 4px;
           </property>
           <property name="icon">
            <iconset resource="icons.qrc">
-            <normaloff>:/icons/res/next.png</normaloff>:/icons/res/next.png</iconset>
+            <normaloff>:/icons/res/next_w.png</normaloff>:/icons/res/next_w.png</iconset>
           </property>
           <property name="iconSize">
            <size>
@@ -234,7 +234,7 @@ border-radius: 4px;
           </property>
           <property name="icon">
            <iconset resource="icons.qrc">
-            <normaloff>:/icons/res/stop_button.png</normaloff>:/icons/res/stop_button.png</iconset>
+            <normaloff>:/icons/res/stop_button_w.png</normaloff>:/icons/res/stop_button_w.png</iconset>
           </property>
           <property name="iconSize">
            <size>
@@ -294,27 +294,27 @@ border-radius: 4px;
              <colorrole role="Button">
               <brush brushstyle="SolidPattern">
                <color alpha="255">
-                <red>106</red>
-                <green>90</green>
-                <blue>205</blue>
+                <red>64</red>
+                <green>65</green>
+                <blue>66</blue>
                </color>
               </brush>
              </colorrole>
              <colorrole role="Base">
               <brush brushstyle="SolidPattern">
                <color alpha="255">
-                <red>106</red>
-                <green>90</green>
-                <blue>205</blue>
+                <red>46</red>
+                <green>47</green>
+                <blue>48</blue>
                </color>
               </brush>
              </colorrole>
              <colorrole role="Window">
               <brush brushstyle="SolidPattern">
                <color alpha="255">
-                <red>106</red>
-                <green>90</green>
-                <blue>205</blue>
+                <red>46</red>
+                <green>47</green>
+                <blue>48</blue>
                </color>
               </brush>
              </colorrole>
@@ -323,9 +323,9 @@ border-radius: 4px;
              <colorrole role="Button">
               <brush brushstyle="SolidPattern">
                <color alpha="255">
-                <red>106</red>
-                <green>90</green>
-                <blue>205</blue>
+                <red>188</red>
+                <green>191</green>
+                <blue>238</blue>
                </color>
               </brush>
              </colorrole>
@@ -374,7 +374,7 @@ QPushButton:hover {
           </property>
           <property name="icon">
            <iconset resource="icons.qrc">
-            <normaloff>:/icons/res/volume.png</normaloff>:/icons/res/volume.png</iconset>
+            <normaloff>:/icons/res/volume_w.png</normaloff>:/icons/res/volume_w.png</iconset>
           </property>
           <property name="iconSize">
            <size>

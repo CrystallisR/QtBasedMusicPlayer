@@ -4,6 +4,8 @@
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
+    , audio_player(new QMediaPlayer(this))
+    , audio_output(new QAudioOutput(this))
     , volume_button_clicked(false)
     , play_button_clicked(false)
     , cached_volume(0.0f)
@@ -11,26 +13,24 @@ MainWindow::MainWindow(QWidget *parent)
     QApplication::setApplicationName("myMusicPlayer");
     QApplication::setOrganizationName("CrystallisR");
     QSettings::setDefaultFormat(QSettings::IniFormat);
-
     readSettings();
+
     ui->setupUi(this);
 
-    // player init
-    audio_player = new QMediaPlayer(this);
-    audio_output = new QAudioOutput(this);
+    // player initialization
     audio_player->setAudioOutput(audio_output);
+    audio_output->setVolume(volumeConvert(last_position));
 
+    // connect
     connect(audio_player, &QMediaPlayer::playbackStateChanged, this, &MainWindow::stateChanged);
     connect(audio_player, &QMediaPlayer::positionChanged, this, &MainWindow::positionChanged);
 
-    // default parameter setting
+    // ui setting
     ui->volumeSlider->setValue(last_position);
-    audio_output->setVolume(volumeConvert(ui->volumeSlider->value()));
     ui->volumeDisplay->setText(QString::number(ui->volumeSlider->value()) + "%");
 
-    // ui setting
     setWindowIcon(QIcon(":icons/res/musical_notec.png"));
-    default_background = new QPixmap(":icons/res/musical_notec.png");
+    default_music_image = QPixmap(":icons/res/musical_notec.png");
     this->setProperty("windowOpacity", 1.0);
 
     // set stylesheet
@@ -47,7 +47,6 @@ MainWindow::MainWindow(QWidget *parent)
 MainWindow::~MainWindow()
 {
     delete ui;
-    delete default_background;
     delete audio_output;
     delete audio_player;
 }
@@ -93,12 +92,12 @@ void MainWindow::on_playButton_clicked()
     if (play_button_clicked)
     {
         audio_player->play();
-        ui->playButton->setIcon(QIcon(":/icons/res/pause.png"));
+        ui->playButton->setIcon(QIcon(":/icons/res/pause_w.png"));
     }
     else
     {
         audio_player->pause();
-        ui->playButton->setIcon(QIcon(":/icons/res/play.png"));
+        ui->playButton->setIcon(QIcon(":/icons/res/play_w.png"));
     }
 }
 
@@ -107,7 +106,7 @@ void MainWindow::on_stopButton_clicked()
 {
     audio_player->stop();
     play_button_clicked = false;
-    ui->playButton->setIcon(QIcon(":/icons/res/play.png"));
+    ui->playButton->setIcon(QIcon(":/icons/res/play_w.png"));
 }
 
 
@@ -118,13 +117,13 @@ void MainWindow::on_volumeButton_clicked()
     {
         cached_volume = audio_output->volume();
         audio_output->setVolume(0);
-        ui->volumeButton->setIcon(QIcon(":/icons/res/volume_mute.png"));
+        ui->volumeButton->setIcon(QIcon(":/icons/res/volume_mute_w.png"));
         ui->volumeDisplay->setText("0%");
     }
     else
     {
         audio_output->setVolume(cached_volume);
-        ui->volumeButton->setIcon(QIcon(":/icons/res/volume.png"));
+        ui->volumeButton->setIcon(QIcon(":/icons/res/volume_w.png"));
         ui->volumeDisplay->setText(QString::number(static_cast<int>(cached_volume * 100)) + "%");
     }
 }
@@ -147,26 +146,29 @@ void MainWindow::on_volumeSlider_sliderMoved(int position)
 void MainWindow::on_actionOpen_File_triggered()
 {
     QString prompt = "Please Select Your Audio File";
-    QString file_format {"MP3 (*.mp3);;WAV (*.wav);;FLAC (*.flac);;AAC (*.acc)"};
+    QString file_format {"ALL (*.mp3 *.wav *.flac *.acc);;MP3 (*.mp3);;WAV (*.wav);;FLAC (*.flac);;AAC (*.acc)"};
     QString file_dir = default_file_dir == "" ? qApp->applicationDirPath() : default_file_dir;
     QString file_name = QFileDialog::getOpenFileName(this, prompt, file_dir, file_format);
     QFileInfo file_info(file_name);
     if (file_info.absolutePath() != "") default_file_dir = file_info.absolutePath();
 
-    audio_player->setSource(QUrl::fromLocalFile(file_name));
-
-    if (1)
-    {// attempt to read meta data
-        ui->musicNameDisplay->setText("Playing <"+ file_info.fileName() + ">...");
-    }
-    else
+    if (file_info.fileName() != "")
     {
-        ui->musicNameDisplay->setText("Playing <"+ file_info.fileName() + ">...");
+        audio_player->setSource(QUrl::fromLocalFile(file_name));
+        if (play_button_clicked) ui->playButton->click();
+        ui->playButton->setEnabled(true);
+        ui->playButton->click();
+
+        if (1)
+        {// attempt to read meta data
+            ui->musicNameDisplay->setText("Playing <"+ file_info.fileName() + ">...");
+        }
+        else
+        {
+            ui->musicNameDisplay->setText("Playing <"+ file_info.fileName() + ">...");
+        }
     }
 
-    if (play_button_clicked) ui->playButton->click();
-    ui->playButton->setEnabled(true);
-    ui->playButton->click();
 }
 
 void MainWindow::on_actionImport_Music_Resources_triggered()

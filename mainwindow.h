@@ -58,15 +58,18 @@ private:
     Ui::MainWindow *ui;
     QMediaPlayer* audio_player;
     QAudioOutput* audio_output;
-    QPixmap* default_background;
 
-    QSettings ini_settings;
+    // file settings
     QString default_file_dir;
+    int last_position;
 
+    // ui settings
+    QPixmap default_music_image;
+
+    // temporary state cache
     bool volume_button_clicked;
     bool play_button_clicked;
     float cached_volume;
-    int last_position;
 
     float volumeConvert(int value);
     void writeSettings();

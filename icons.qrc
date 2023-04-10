@@ -12,5 +12,12 @@
         <file>res/star_shining.png</file>
         <file>res/music_note_r1.png</file>
         <file>res/musical-note.png</file>
+        <file>res/back_w.png</file>
+        <file>res/next_w.png</file>
+        <file>res/pause_w.png</file>
+        <file>res/play_w.png</file>
+        <file>res/stop_button_w.png</file>
+        <file>res/volume_mute_w.png</file>
+        <file>res/volume_w.png</file>
     </qresource>
 </RCC>
