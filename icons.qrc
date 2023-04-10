@@ -19,5 +19,6 @@
         <file>res/stop_button_w.png</file>
         <file>res/volume_mute_w.png</file>
         <file>res/volume_w.png</file>
+        <file>res/music_notec2.png</file>
     </qresource>
 </RCC>

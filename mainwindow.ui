@@ -23,10 +23,159 @@
    <property name="styleSheet">
     <string notr="true">background-color: rgb(234, 229, 255);</string>
    </property>
-   <layout class="QVBoxLayout" name="verticalLayout_2">
+   <layout class="QVBoxLayout" name="verticalLayout_2" stretch="2,1">
     <item>
-     <layout class="QHBoxLayout" name="horizontalLayout_3" stretch="2,0,3">
-      <item>
+     <layout class="QGridLayout" name="gridLayout" rowstretch="3,1" columnstretch="1,2">
+      <property name="horizontalSpacing">
+       <number>10</number>
+      </property>
+      <item row="0" column="1" rowspan="2">
+       <widget class="QListWidget" name="musicList">
+        <property name="palette">
+         <palette>
+          <active>
+           <colorrole role="Button">
+            <brush brushstyle="SolidPattern">
+             <color alpha="255">
+              <red>255</red>
+              <green>255</green>
+              <blue>255</blue>
+             </color>
+            </brush>
+           </colorrole>
+           <colorrole role="Base">
+            <brush brushstyle="SolidPattern">
+             <color alpha="255">
+              <red>255</red>
+              <green>255</green>
+              <blue>255</blue>
+             </color>
+            </brush>
+           </colorrole>
+           <colorrole role="Window">
+            <brush brushstyle="SolidPattern">
+             <color alpha="255">
+              <red>255</red>
+              <green>255</green>
+              <blue>255</blue>
+             </color>
+            </brush>
+           </colorrole>
+          </active>
+          <inactive>
+           <colorrole role="Button">
+            <brush brushstyle="SolidPattern">
+             <color alpha="255">
+              <red>255</red>
+              <green>255</green>
+              <blue>255</blue>
+             </color>
+            </brush>
+           </colorrole>
+           <colorrole role="Base">
+            <brush brushstyle="SolidPattern">
+             <color alpha="255">
+              <red>255</red>
+              <green>255</green>
+              <blue>255</blue>
+             </color>
+            </brush>
+           </colorrole>
+           <colorrole role="Window">
+            <brush brushstyle="SolidPattern">
+             <color alpha="255">
+              <red>255</red>
+              <green>255</green>
+              <blue>255</blue>
+             </color>
+            </brush>
+           </colorrole>
+          </inactive>
+          <disabled>
+           <colorrole role="Button">
+            <brush brushstyle="SolidPattern">
+             <color alpha="255">
+              <red>255</red>
+              <green>255</green>
+              <blue>255</blue>
+             </color>
+            </brush>
+           </colorrole>
+           <colorrole role="Base">
+            <brush brushstyle="SolidPattern">
+             <color alpha="255">
+              <red>255</red>
+              <green>255</green>
+              <blue>255</blue>
+             </color>
+            </brush>
+           </colorrole>
+           <colorrole role="Window">
+            <brush brushstyle="SolidPattern">
+             <color alpha="255">
+              <red>255</red>
+              <green>255</green>
+              <blue>255</blue>
+             </color>
+            </brush>
+           </colorrole>
+          </disabled>
+         </palette>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">QListWidget {
+	border: 5px solid rgb(184, 175, 247);
+	border-radius: 5px;
+	border-style: solid;
+	background-color:  rgb(255, 255, 255);
+	padding: 1px;
+}
+QListWidget:item {
+	color: rgb(0, 0, 0);
+	border: 1px solid rgb(184, 175, 247);
+	border-radius: 3px;
+	background-color:  rgb(255, 255, 255);
+	padding: 1px;
+}
+QListWidget:item:hover {
+	color:rgb(255, 170, 0);
+	border: 1px solid rgb(184, 175, 247);
+	border-radius: 3px;
+	background-color:  rgb(184, 175, 247);
+	padding: 1px;
+}
+
+</string>
+        </property>
+        <item>
+         <property name="text">
+          <string>Music List</string>
+         </property>
+         <property name="background">
+          <brush brushstyle="NoBrush">
+           <color alpha="255">
+            <red>85</red>
+            <green>85</green>
+            <blue>255</blue>
+           </color>
+          </brush>
+         </property>
+         <property name="foreground">
+          <brush brushstyle="NoBrush">
+           <color alpha="255">
+            <red>0</red>
+            <green>0</green>
+            <blue>0</blue>
+           </color>
+          </brush>
+         </property>
+         <property name="icon">
+          <iconset theme="video-display"/>
+         </property>
+        </item>
+       </widget>
+      </item>
+      <item row="0" column="0">
        <widget class="QLabel" name="musicGraphics">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Ignored" vsizetype="Ignored">
@@ -57,33 +206,40 @@
         </property>
        </widget>
       </item>
-      <item>
-       <spacer name="horizontalSpacer_2">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
+      <item row="1" column="0">
+       <widget class="QLabel" name="musicNameDisplay">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Ignored" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
         </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>20</width>
-          <height>20</height>
-         </size>
+        <property name="font">
+         <font>
+          <pointsize>8</pointsize>
+         </font>
         </property>
-       </spacer>
-      </item>
-      <item>
-       <widget class="QListView" name="musicListView"/>
+        <property name="styleSheet">
+         <string notr="true">color: rgb(130, 41, 255);</string>
+        </property>
+        <property name="text">
+         <string>Playing Nothing now</string>
+        </property>
+        <property name="textFormat">
+         <enum>Qt::AutoText</enum>
+        </property>
+        <property name="scaledContents">
+         <bool>true</bool>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
       </item>
      </layout>
     </item>
     <item>
-     <layout class="QVBoxLayout" name="verticalLayout" stretch="1,2,3">
-      <item>
-       <widget class="QLabel" name="musicNameDisplay">
-        <property name="text">
-         <string/>
-        </property>
-       </widget>
-      </item>
+     <layout class="QVBoxLayout" name="verticalLayout" stretch="2,3">
       <item>
        <layout class="QHBoxLayout" name="horizontalLayout">
         <item>
@@ -265,27 +421,27 @@ border-radius: 4px;
              <colorrole role="Button">
               <brush brushstyle="SolidPattern">
                <color alpha="255">
-                <red>106</red>
-                <green>90</green>
-                <blue>205</blue>
+                <red>122</red>
+                <green>110</green>
+                <blue>255</blue>
                </color>
               </brush>
              </colorrole>
              <colorrole role="Base">
               <brush brushstyle="SolidPattern">
                <color alpha="255">
-                <red>106</red>
-                <green>90</green>
-                <blue>205</blue>
+                <red>122</red>
+                <green>110</green>
+                <blue>255</blue>
                </color>
               </brush>
              </colorrole>
              <colorrole role="Window">
               <brush brushstyle="SolidPattern">
                <color alpha="255">
-                <red>106</red>
-                <green>90</green>
-                <blue>205</blue>
+                <red>122</red>
+                <green>110</green>
+                <blue>255</blue>
                </color>
               </brush>
              </colorrole>
@@ -294,27 +450,27 @@ border-radius: 4px;
              <colorrole role="Button">
               <brush brushstyle="SolidPattern">
                <color alpha="255">
-                <red>64</red>
-                <green>65</green>
-                <blue>66</blue>
+                <red>122</red>
+                <green>110</green>
+                <blue>255</blue>
                </color>
               </brush>
              </colorrole>
              <colorrole role="Base">
               <brush brushstyle="SolidPattern">
                <color alpha="255">
-                <red>46</red>
-                <green>47</green>
-                <blue>48</blue>
+                <red>122</red>
+                <green>110</green>
+                <blue>255</blue>
                </color>
               </brush>
              </colorrole>
              <colorrole role="Window">
               <brush brushstyle="SolidPattern">
                <color alpha="255">
-                <red>46</red>
-                <green>47</green>
-                <blue>48</blue>
+                <red>122</red>
+                <green>110</green>
+                <blue>255</blue>
                </color>
               </brush>
              </colorrole>
@@ -323,27 +479,27 @@ border-radius: 4px;
              <colorrole role="Button">
               <brush brushstyle="SolidPattern">
                <color alpha="255">
-                <red>188</red>
-                <green>191</green>
-                <blue>238</blue>
+                <red>122</red>
+                <green>110</green>
+                <blue>255</blue>
                </color>
               </brush>
              </colorrole>
              <colorrole role="Base">
               <brush brushstyle="SolidPattern">
                <color alpha="255">
-                <red>106</red>
-                <green>90</green>
-                <blue>205</blue>
+                <red>122</red>
+                <green>110</green>
+                <blue>255</blue>
                </color>
               </brush>
              </colorrole>
              <colorrole role="Window">
               <brush brushstyle="SolidPattern">
                <color alpha="255">
-                <red>106</red>
-                <green>90</green>
-                <blue>205</blue>
+                <red>122</red>
+                <green>110</green>
+                <blue>255</blue>
                </color>
               </brush>
              </colorrole>
@@ -358,7 +514,7 @@ border-radius: 4px;
 	border: 5px solid #6A5ACD;
 	border-radius: 30px;
 	border-style: outset;
-	background-color:  #6A5ACD;
+	background-color:  rgb(122, 110, 255);
 	padding: 5px;
 }
 QPushButton:hover {

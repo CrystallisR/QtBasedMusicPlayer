@@ -18,6 +18,7 @@
 #include <QtMath>
 #include <QSettings>
 #include <QCloseEvent>
+#include <QListWidgetItem>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -54,6 +55,12 @@ private slots:
 
     void on_actionSet_Appearance_triggered();
 
+    void on_musicList_itemDoubleClicked(QListWidgetItem *item);
+
+    void on_forwardButton_clicked();
+
+    void on_backwardButton_clicked();
+
 private:
     Ui::MainWindow *ui;
     QMediaPlayer* audio_player;
@@ -61,6 +68,7 @@ private:
 
     // file settings
     QString default_file_dir;
+    QString default_import_dir;
     int last_position;
 
     // ui settings
@@ -72,6 +80,7 @@ private:
     float cached_volume;
 
     float volumeConvert(int value);
+    void startPlaying(QFileInfo file_info);
     void writeSettings();
     void readSettings();
 };
