@@ -13,9 +13,13 @@ MainWindow::MainWindow(QWidget *parent)
     QApplication::setApplicationName("myMusicPlayer");
     QApplication::setOrganizationName("CrystallisR");
     QSettings::setDefaultFormat(QSettings::IniFormat);
-    readSettings();
 
     ui->setupUi(this);
+
+    // load settings
+    // you should read settings after ui is set up
+    // since you may want to initialize some components in ui
+    readSettings();
 
     // player initialization
     audio_player->setAudioOutput(audio_output);
@@ -224,6 +228,7 @@ void MainWindow::writeSettings()
     settings.setValue("file/default_dir", default_file_dir);
     settings.setValue("file/default_import_dir", default_import_dir);
     settings.setValue("file/last_volume_pos", last_position);
+    saveList(settings);
 }
 
 void MainWindow::readSettings()
@@ -232,27 +237,38 @@ void MainWindow::readSettings()
     default_file_dir = settings.value("file/default_dir", "").toString();
     default_import_dir = settings.value("file/default_import_dir", default_file_dir).toString();
     last_position = settings.value("file/last_volume_pos", 25).toInt();
+    loadList(settings);
 }
 
 void MainWindow::saveList(QSettings& settings)
 {
-    QString keyGroup {"musicList/"};
-    QString subGroup1 {"musicListItemText/"}, subGroup2 {"musicPath/"};
-    /*
+    settings.beginWriteArray("musicList");
     for (int row = 0; row < ui->musicList->count(); row++)
     {
+        settings.setArrayIndex(row);
         QListWidgetItem* cur_item = ui->musicList->item(row);
-        settings.setValue(keyGroup + subGroup1 + QString::number(row), cur_item->text());
-        settings.setValue(keyGroup + subGroup2 + QString::number(row), cur_item->data(Qt::UserRole));
+        settings.setValue("musicName", cur_item->text());
+        settings.setValue("musicPath", cur_item->data(Qt::UserRole));
     }
-    */
+    settings.endArray();
 }
 
 void MainWindow::loadList(QSettings& settings)
 {
-    QString keyGroup {"musicList/"};
-    QString subGroup1 {"musicListItemText/"}, subGroup2 {"musicPath/"};
+    int size = settings.beginReadArray("musicList");
+    for (int row = 0; row < size; row++)
+    {
+        settings.setArrayIndex(row);
+        QString file_name = settings.value("musicName").toString();
+        QString file_path = settings.value("musicPath").toString();
 
+        QListWidgetItem* cur_item = new QListWidgetItem;
+        cur_item->setIcon(QIcon(":/icons/res/music_notec2.png"));
+        cur_item->setText(file_name);
+        cur_item->setData(Qt::UserRole, file_path);
+        ui->musicList->addItem(cur_item);
+    }
+    settings.endArray();
 }
 
 void MainWindow::closeEvent(QCloseEvent *event)
