@@ -15,6 +15,8 @@
 #include <QAudioOutput>
 #include <QMediaMetaData>
 #include <QTime>
+#include <QQueue>
+#include <QStack>
 #include <QtMath>
 #include <QSettings>
 #include <QCloseEvent>
@@ -55,7 +57,7 @@ private slots:
 
     void on_actionSet_Appearance_triggered();
 
-    void on_musicList_itemDoubleClicked(QListWidgetItem *item);
+    void on_musicList_itemDoubleClicked(QListWidgetItem* item);
 
     void on_forwardButton_clicked();
 
@@ -88,6 +90,19 @@ private:
     void readSettings();
     void saveList(QSettings& settings);
     void loadList(QSettings& settings);
+
+    // playing queue & played stack
+    #define HISTORYSIZE 200
+    #define QUEUESIZE 300
+    #define AUTO_QUEUE_BATCH 20
+    #define AUTO_STACK_BATCH 20
+    int current_item_row;
+    QQueue<QListWidgetItem*> playing_queue;
+    QStack<QListWidgetItem*> played_stack;
+    void setPlayingQueue(int row);
+    void setPlayedStack(int row);
+    inline void playListItem(QListWidgetItem* item);
+    inline void updateItemSelectedUI(QListWidgetItem* cur_item, QListWidgetItem* new_item);
 };
 
 #endif // MAINWINDOW_H

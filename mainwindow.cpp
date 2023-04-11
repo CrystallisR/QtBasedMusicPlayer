@@ -10,6 +10,7 @@ MainWindow::MainWindow(QWidget *parent)
     , play_button_clicked(false)
     , music_manually_stopped(false)
     , cached_volume(0.0f)
+    , current_item_row(0)
 {  
     QApplication::setApplicationName("myMusicPlayer");
     QApplication::setOrganizationName("CrystallisR");
@@ -283,39 +284,94 @@ void MainWindow::closeEvent(QCloseEvent *event)
     event->accept();
 }
 
-
-void MainWindow::on_musicList_itemDoubleClicked(QListWidgetItem *item)
+void MainWindow::setPlayingQueue(int row = 0)
 {
-    QString file_path = item->data(Qt::UserRole).toString();
-    QFileInfo file_info(file_path);
-    startPlaying(file_info);
+    if (ui->musicList->count() == 0) return;
+    playing_queue.clear();
+    for (int cnt = 0; cnt < AUTO_QUEUE_BATCH; cnt++)
+    {
+        if (row >= ui->musicList->count()) row = 0;
+        playing_queue.enqueue(ui->musicList->item(row++));
+    }
+}
+
+void MainWindow::setPlayedStack(int row = 0)
+{
+    if (ui->musicList->count() == 0) return;
+    played_stack.clear();
+    for (int cnt = 0; cnt < AUTO_STACK_BATCH; cnt++)
+    {
+        if (row < 0) row = ui->musicList->count() - 1;
+        played_stack.push(ui->musicList->item(row--));
+    }
+}
+
+void MainWindow::on_musicList_itemDoubleClicked(QListWidgetItem* item)
+{
+    // set playing queue from this newly selected item
+    current_item_row = ui->musicList->row(item);
+    setPlayingQueue(current_item_row);
+    qDebug() << "DoubleClicked: Current=>" << current_item_row;
+    playListItem(item);
 }
 
 
 void MainWindow::on_forwardButton_clicked()
 {
-    if (ui->musicList->count() > 0)
+    if (ui->musicList->count() <= 0) return;
+
+    ui->stopButton->click();
+    qDebug() << "ForwardButton: Current=>" << current_item_row << "\n";
+
+    if (playing_queue.empty())
+        setPlayingQueue(current_item_row);
+
+    played_stack.push(ui->musicList->item(current_item_row));
+
+    if (!playing_queue.empty())
     {
-        auto next_item_row = (ui->musicList->currentRow() + 1) % ui->musicList->count();
-        ui->musicList->setCurrentRow(next_item_row);
-        QListWidgetItem *next_item = ui->musicList->item(next_item_row);
-        ui->musicList->setCurrentItem(next_item);
-        ui->musicList->itemDoubleClicked(next_item);
+        QListWidgetItem *next_item = playing_queue.dequeue();
+        QListWidgetItem *cur_item = ui->musicList->item(current_item_row);
+        updateItemSelectedUI(cur_item, next_item);
+        current_item_row = ui->musicList->row(next_item);
+        qDebug() << "ForwardButton: Next=>" << current_item_row << "\n";
+        playListItem(next_item);
     }
 }
 
 
 void MainWindow::on_backwardButton_clicked()
 {
-    if (ui->musicList->count() > 0)
+    if (ui->musicList->count() <= 0) return;
+
+    ui->stopButton->click();
+    qDebug() << "BackwardButton: Current=>" << current_item_row << "\n";
+
+    if (played_stack.empty())
+        setPlayedStack(current_item_row);
+
+    if (!played_stack.empty())
     {
-        auto pre_item_row = ui->musicList->currentRow() - 1;
-        if (pre_item_row <= 0) pre_item_row = ui->musicList->count() - 1;
-        ui->musicList->setCurrentRow(pre_item_row);
-        QListWidgetItem *pre_item = ui->musicList->item(pre_item_row);
-        ui->musicList->setCurrentItem(pre_item);
-        ui->musicList->itemDoubleClicked(pre_item);
+        QListWidgetItem *pre_item = played_stack.pop();
+        QListWidgetItem *cur_item = ui->musicList->item(current_item_row);
+        updateItemSelectedUI(cur_item, pre_item);
+        current_item_row = ui->musicList->row(pre_item);
+        qDebug() << "BackwardButton: Current=>" << current_item_row << "\n";
+        playListItem(pre_item);
     }
+}
+
+inline void MainWindow::updateItemSelectedUI(QListWidgetItem* cur_item, QListWidgetItem* new_item)
+{
+    cur_item->setSelected(false);
+    new_item->setSelected(true);
+}
+
+inline void MainWindow::playListItem(QListWidgetItem* item)
+{
+    QString file_path = item->data(Qt::UserRole).toString();
+    QFileInfo file_info(file_path);
+    startPlaying(file_info);
 }
 
 
