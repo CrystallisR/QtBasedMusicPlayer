@@ -190,12 +190,14 @@ void MainWindow::on_actionImport_Music_Resources_triggered()
     for (const QFileInfo &file : dir.entryInfoList(QDir::Files))
     {
         if (!re.match(file.fileName()).hasMatch()) continue;
-        // TODO: skip repeated files
+        auto items = ui->musicList->findItems(file.fileName(), Qt::MatchExactly);
+        if (!items.isEmpty()) continue;
+
         QListWidgetItem* item = new QListWidgetItem;
         item->setIcon(QIcon(":/icons/res/music_notec2.png"));
         item->setText(file.fileName());
         item->setData(Qt::UserRole, file.absoluteFilePath());
-        ui->musicList->insertItem(ui->musicList->count()+1, item);
+        ui->musicList->addItem(item);
     }
     default_import_dir = import_dir;
 }
@@ -232,6 +234,27 @@ void MainWindow::readSettings()
     last_position = settings.value("file/last_volume_pos", 25).toInt();
 }
 
+void MainWindow::saveList(QSettings& settings)
+{
+    QString keyGroup {"musicList/"};
+    QString subGroup1 {"musicListItemText/"}, subGroup2 {"musicPath/"};
+    /*
+    for (int row = 0; row < ui->musicList->count(); row++)
+    {
+        QListWidgetItem* cur_item = ui->musicList->item(row);
+        settings.setValue(keyGroup + subGroup1 + QString::number(row), cur_item->text());
+        settings.setValue(keyGroup + subGroup2 + QString::number(row), cur_item->data(Qt::UserRole));
+    }
+    */
+}
+
+void MainWindow::loadList(QSettings& settings)
+{
+    QString keyGroup {"musicList/"};
+    QString subGroup1 {"musicListItemText/"}, subGroup2 {"musicPath/"};
+
+}
+
 void MainWindow::closeEvent(QCloseEvent *event)
 {
     writeSettings();
@@ -249,21 +272,33 @@ void MainWindow::on_musicList_itemDoubleClicked(QListWidgetItem *item)
 
 void MainWindow::on_forwardButton_clicked()
 {
-    auto next_item_row = (ui->musicList->currentRow() + 1) % ui->musicList->count();
-    ui->musicList->setCurrentRow(next_item_row);
-    QListWidgetItem *next_item = ui->musicList->item(next_item_row);
-    ui->musicList->setCurrentItem(next_item);
-    ui->musicList->itemDoubleClicked(next_item);
+    if (ui->musicList->count() > 0)
+    {
+        auto next_item_row = (ui->musicList->currentRow() + 1) % ui->musicList->count();
+        ui->musicList->setCurrentRow(next_item_row);
+        QListWidgetItem *next_item = ui->musicList->item(next_item_row);
+        ui->musicList->setCurrentItem(next_item);
+        ui->musicList->itemDoubleClicked(next_item);
+    }
 }
 
 
 void MainWindow::on_backwardButton_clicked()
 {
-    auto pre_item_row = ui->musicList->currentRow() - 1;
-    if (pre_item_row <= 0) pre_item_row = ui->musicList->count() - 1;
-    ui->musicList->setCurrentRow(pre_item_row);
-    QListWidgetItem *pre_item = ui->musicList->item(pre_item_row);
-    ui->musicList->setCurrentItem(pre_item);
-    ui->musicList->itemDoubleClicked(pre_item);
+    if (ui->musicList->count() > 0)
+    {
+        auto pre_item_row = ui->musicList->currentRow() - 1;
+        if (pre_item_row <= 0) pre_item_row = ui->musicList->count() - 1;
+        ui->musicList->setCurrentRow(pre_item_row);
+        QListWidgetItem *pre_item = ui->musicList->item(pre_item_row);
+        ui->musicList->setCurrentItem(pre_item);
+        ui->musicList->itemDoubleClicked(pre_item);
+    }
+}
+
+
+void MainWindow::on_actionReset_Music_List_triggered()
+{
+    ui->musicList->clear();
 }
 

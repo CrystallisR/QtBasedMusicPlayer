@@ -122,6 +122,9 @@
           </disabled>
          </palette>
         </property>
+        <property name="focusPolicy">
+         <enum>Qt::NoFocus</enum>
+        </property>
         <property name="styleSheet">
          <string notr="true">QListWidget {
 	border: 5px solid rgb(184, 175, 247);
@@ -138,18 +141,91 @@ QListWidget:item {
 	padding: 1px;
 }
 QListWidget:item:hover {
-	color:rgb(255, 170, 0);
+	color: rgb(255, 240, 79);
+	border: 1px solid rgb(184, 175, 247);
+	border-radius: 3px;
+	background-color:  rgb(184, 175, 247);
+	padding: 1px;
+}
+QListWidget:item:selected {
+	color: rgb(255, 240, 79);
 	border: 1px solid rgb(184, 175, 247);
 	border-radius: 3px;
 	background-color:  rgb(184, 175, 247);
 	padding: 1px;
 }
 
+
+QScrollBar:horizontal {
+    background: white;
+    height: 10px;
+    margin: 0px 10px 0px 10px;
+}
+QScrollBar::handle:horizontal {
+    background: white;
+	border: 2px solid rgb(184, 175, 247);
+	border-radius: 5px;
+    min-width: 10px;
+}
+QScrollBar::handle:horizontal:hover {
+    background: rgb(184, 175, 247);
+	border: 2px solid rgb(184, 175, 247);
+	border-radius: 5px;
+    min-width: 10px;
+}
+QScrollBar::add-line:horizontal {
+    background: white;
+    width: 10px;
+    subcontrol-position: right;
+    subcontrol-origin: margin;
+}
+QScrollBar::sub-line:horizontal {
+    background: white;
+    width: 10px;
+    subcontrol-position: left;
+    subcontrol-origin: margin;
+}
+
+QScrollBar:vertical {
+    background: white;
+    width: 10px;
+    margin: 10px 0px 10px 0px;
+}
+QScrollBar::handle:vertical {
+    background: white;
+	border: 2px solid rgb(184, 175, 247);
+	border-radius: 5px;
+    min-width: 10px;
+}
+QScrollBar::handle:vertical:hover {
+    background: rgb(184, 175, 247);
+	border: 2px solid rgb(184, 175, 247);
+	border-radius: 5px;
+    min-height: 10px;
+}
+QScrollBar::add-line:vertical {
+    background: white;
+    height: 10px;
+    subcontrol-position: bottom;
+    subcontrol-origin: margin;
+}
+QScrollBar::sub-line:vertical {
+    background: white;
+    height: 10px;
+    subcontrol-position: top;
+    subcontrol-origin: margin;
+}
 </string>
+        </property>
+        <property name="selectionMode">
+         <enum>QAbstractItemView::ExtendedSelection</enum>
+        </property>
+        <property name="sortingEnabled">
+         <bool>false</bool>
         </property>
         <item>
          <property name="text">
-          <string>Music List</string>
+          <string>Music List test list 1 test sttle etc. etc. etc. xx</string>
          </property>
          <property name="background">
           <brush brushstyle="NoBrush">
@@ -170,7 +246,8 @@ QListWidget:item:hover {
           </brush>
          </property>
          <property name="icon">
-          <iconset theme="video-display"/>
+          <iconset theme="video-display">
+           <normaloff>.</normaloff>.</iconset>
          </property>
         </item>
        </widget>
@@ -674,6 +751,7 @@ border-radius: 4px;
      <string>Import</string>
     </property>
     <addaction name="actionImport_Music_Resources"/>
+    <addaction name="actionReset_Music_List"/>
    </widget>
    <widget class="QMenu" name="menuSettings">
     <property name="title">
@@ -711,6 +789,15 @@ border-radius: 4px;
    </property>
    <property name="text">
     <string>Appearance</string>
+   </property>
+  </action>
+  <action name="actionReset_Music_List">
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/icons/res/reset_list.png</normaloff>:/icons/res/reset_list.png</iconset>
+   </property>
+   <property name="text">
+    <string>Reset Music List</string>
    </property>
   </action>
  </widget>

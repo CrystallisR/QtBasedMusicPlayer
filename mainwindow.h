@@ -61,6 +61,8 @@ private slots:
 
     void on_backwardButton_clicked();
 
+    void on_actionReset_Music_List_triggered();
+
 private:
     Ui::MainWindow *ui;
     QMediaPlayer* audio_player;
@@ -83,6 +85,8 @@ private:
     void startPlaying(QFileInfo file_info);
     void writeSettings();
     void readSettings();
+    void saveList(QSettings& settings);
+    void loadList(QSettings& settings);
 };
 
 #endif // MAINWINDOW_H

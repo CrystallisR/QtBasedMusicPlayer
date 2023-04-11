@@ -20,5 +20,6 @@
         <file>res/volume_mute_w.png</file>
         <file>res/volume_w.png</file>
         <file>res/music_notec2.png</file>
+        <file>res/reset_list.png</file>
     </qresource>
 </RCC>
