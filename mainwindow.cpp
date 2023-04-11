@@ -8,6 +8,7 @@ MainWindow::MainWindow(QWidget *parent)
     , audio_output(new QAudioOutput(this))
     , volume_button_clicked(false)
     , play_button_clicked(false)
+    , music_manually_stopped(false)
     , cached_volume(0.0f)
 {  
     QApplication::setApplicationName("myMusicPlayer");
@@ -55,6 +56,21 @@ MainWindow::~MainWindow()
     delete audio_player;
 }
 
+void MainWindow::positionChanged(qint64 position)
+{
+    if (audio_player->duration() != ui->progressSlider->maximum())
+        ui->progressSlider->setMaximum(audio_player->duration());
+
+    ui->progressSlider->setValue(position);
+
+    const int base {1000};
+    auto seconds = (position / base) % 60;
+    auto minutes = (position/(60 * base)) % 60;
+    auto hours = (position/(3600 * base)) % 24;
+    QTime time(hours, minutes, seconds);
+    ui->durationDisplay->setText(time.toString());
+}
+
 void MainWindow::stateChanged(QMediaPlayer::PlaybackState state)
 {
     if (state == QMediaPlayer::PlayingState)
@@ -71,28 +87,16 @@ void MainWindow::stateChanged(QMediaPlayer::PlaybackState state)
     {
         ui->playButton->setEnabled(true);
         ui->stopButton->setEnabled(false);
+        if (!music_manually_stopped)
+            ui->forwardButton->click();
     }
-}
-
-void MainWindow::positionChanged(qint64 position)
-{
-    if (audio_player->duration() != ui->progressSlider->maximum())
-        ui->progressSlider->setMaximum(audio_player->duration());
-
-    ui->progressSlider->setValue(position);
-
-    const int base {1000};
-    auto seconds = (position / base) % 60;
-    auto minutes = (position/(60 * base)) % 60;
-    auto hours = (position/(3600 * base)) % 24;
-    QTime time(hours, minutes, seconds);
-    ui->durationDisplay->setText(time.toString());
 }
 
 
 void MainWindow::on_playButton_clicked()
 {
     play_button_clicked = !play_button_clicked;
+    music_manually_stopped = false;
     if (play_button_clicked)
     {
         audio_player->play();
@@ -108,8 +112,10 @@ void MainWindow::on_playButton_clicked()
 
 void MainWindow::on_stopButton_clicked()
 {
-    audio_player->stop();
+    // when state changes to stop, <music_manually_stopped>'ll be checked, set it before stop()
+    music_manually_stopped = true;
     play_button_clicked = false;
+    audio_player->stop();
     ui->playButton->setIcon(QIcon(":/icons/res/play_w.png"));
 }
 

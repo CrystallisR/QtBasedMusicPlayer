@@ -76,9 +76,10 @@ private:
     // ui settings
     QPixmap default_music_image;
 
-    // temporary state cache
+    // temporary state/ control variable
     bool volume_button_clicked;
     bool play_button_clicked;
+    bool music_manually_stopped;
     float cached_volume;
 
     float volumeConvert(int value);

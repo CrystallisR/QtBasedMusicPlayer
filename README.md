@@ -1,7 +1,9 @@
-ToDo:
-    Sequence Playing ?
-    Play queue
-    List Creating
-    Dialogs
-    User Settings
-    UI Improvement
+# Qt6 Based MusicPlayer
+
+## To Do:dizzy_face::
+- [x] sequence playing
+- [ ] Play queue 
+- [ ] List Creating
+- [ ] Dialogs
+- [ ] User Settings
+- [ ] UI Improvement
