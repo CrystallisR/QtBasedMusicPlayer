@@ -21,5 +21,6 @@
         <file>res/volume_w.png</file>
         <file>res/music_notec2.png</file>
         <file>res/reset_list.png</file>
+        <file>res/question_markr1.png</file>
     </qresource>
 </RCC>

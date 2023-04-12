@@ -19,6 +19,7 @@
 #include <QSettings>
 #include <QCloseEvent>
 #include <QListWidgetItem>
+#include <QMessageBox>
 #include "playqueue.h"
 
 QT_BEGIN_NAMESPACE

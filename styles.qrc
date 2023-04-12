@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/css">
+        <file>styles/messageBox.css</file>
+    </qresource>
+</RCC>

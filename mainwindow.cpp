@@ -97,8 +97,33 @@ void MainWindow::stateChanged(QMediaPlayer::PlaybackState state)
 // protected
 void MainWindow::closeEvent(QCloseEvent *event)
 {
-    writeSettings();
-    event->accept();
+    QMessageBox exit_box;
+    QIcon window_icon = QIcon(QPixmap(":icons/res/musical_notec.png"));
+    QPixmap display_icon = QPixmap(":icons/res/question_markr1.png");
+    exit_box.setWindowTitle("Exit");
+    exit_box.setWindowIcon(window_icon);
+    exit_box.setIconPixmap(display_icon.scaledToHeight(40));
+    exit_box.setText("<p align='center'>Are You Sure to Exit?");
+    // set MessageBox style
+    /*
+    QFile MBstyleFile( ":css/styles/messageBox.css" );
+    MBstyleFile.open( QFile::ReadOnly );
+    QString MBstyle( MBstyleFile.readAll() );
+    exit_box.setStyleSheet(MBstyle);
+    */
+    exit_box.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+    exit_box.setDefaultButton(QMessageBox::Yes);
+    auto ret = exit_box.exec();
+
+    if (ret == QMessageBox::Yes)
+    {
+        writeSettings();
+        event->accept();
+    }
+    else
+    {
+        event->ignore();
+    }
 }
 
 // private slot
