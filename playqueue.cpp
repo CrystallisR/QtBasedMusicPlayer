@@ -31,6 +31,7 @@ void PlayQueue::updatePlayingQueue(int row)
     for (int cnt = 0; cnt < AUTO_QUEUE_BATCH; cnt++)
     {
         if (row >= play_list->count()) row = 0;
+        if (default_queue.size() >= QUEUESIZE) default_queue.dequeue();
         default_queue.enqueue(play_list->item(row++));
     }
 }
@@ -44,6 +45,7 @@ void PlayQueue::setHistoryStack(int row)
     for (int cnt = 0; cnt < AUTO_STACK_BATCH; cnt++)
     {
         if (row >= play_list->count()) row = 0;
+        if (history_stack.size() >= HISTORYSIZE) history_stack.pop_front();
         history_stack.push(play_list->item(row++));
     }
 }
@@ -82,6 +84,9 @@ QListWidgetItem *PlayQueue::previous()
     QListWidgetItem* pre_item {nullptr};
 
     if (play_list->count() <= 0) return pre_item;
+
+    if (!history_stack.empty() && play_list->row(history_stack.top()) == current_item_row)
+        history_stack.pop();
 
     if (history_stack.empty())
         setHistoryStack(current_item_row);
