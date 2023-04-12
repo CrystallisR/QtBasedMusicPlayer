@@ -15,12 +15,11 @@
 #include <QAudioOutput>
 #include <QMediaMetaData>
 #include <QTime>
-#include <QQueue>
-#include <QStack>
 #include <QtMath>
 #include <QSettings>
 #include <QCloseEvent>
 #include <QListWidgetItem>
+#include "playqueue.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -69,6 +68,7 @@ private:
     Ui::MainWindow *ui;
     QMediaPlayer* audio_player;
     QAudioOutput* audio_output;
+    PlayQueue* play_queue;
 
     // file settings
     QString default_file_dir;
@@ -84,25 +84,22 @@ private:
     bool music_manually_stopped;
     float cached_volume;
 
-    float volumeConvert(int value);
-    void startPlaying(QFileInfo file_info);
+    // play control
+    void startPlayingNew(QFileInfo file_info);
+    inline void playListItem(QListWidgetItem* item);
+
+    // ui update
+    void showMusicInfo(QFileInfo file_info);
+    inline void updateItemSelectedUI(QListWidgetItem* cur_item, QListWidgetItem* new_item);
+
+    // save/load settings
     void writeSettings();
     void readSettings();
     void saveList(QSettings& settings);
     void loadList(QSettings& settings);
 
-    // playing queue & played stack
-    #define HISTORYSIZE 200
-    #define QUEUESIZE 300
-    #define AUTO_QUEUE_BATCH 20
-    #define AUTO_STACK_BATCH 20
-    int current_item_row;
-    QQueue<QListWidgetItem*> playing_queue;
-    QStack<QListWidgetItem*> played_stack;
-    void setPlayingQueue(int row);
-    void setPlayedStack(int row);
-    inline void playListItem(QListWidgetItem* item);
-    inline void updateItemSelectedUI(QListWidgetItem* cur_item, QListWidgetItem* new_item);
+    // helper functions
+    float volumeConvert(int value);
 };
 
 #endif // MAINWINDOW_H

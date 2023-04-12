@@ -10,7 +10,6 @@ MainWindow::MainWindow(QWidget *parent)
     , play_button_clicked(false)
     , music_manually_stopped(false)
     , cached_volume(0.0f)
-    , current_item_row(0)
 {  
     QApplication::setApplicationName("myMusicPlayer");
     QApplication::setOrganizationName("CrystallisR");
@@ -22,6 +21,7 @@ MainWindow::MainWindow(QWidget *parent)
     // you should read settings after ui is set up
     // since you may want to initialize some components in ui
     readSettings();
+    play_queue = new PlayQueue(ui->musicList);
 
     // player initialization
     audio_player->setAudioOutput(audio_output);
@@ -46,7 +46,7 @@ MainWindow::MainWindow(QWidget *parent)
     {ui->playButton, ui->stopButton, ui->volumeButton, ui->backwardButton, ui->forwardButton})
         button->setStyleSheet(button_style1);
 
-    ui->playButton->setEnabled(false);
+    ui->playButton->setEnabled(true);
     ui->stopButton->setEnabled(false);
 }
 
@@ -55,6 +55,7 @@ MainWindow::~MainWindow()
     delete ui;
     delete audio_output;
     delete audio_player;
+    delete play_queue;
 }
 
 void MainWindow::positionChanged(qint64 position)
@@ -93,66 +94,14 @@ void MainWindow::stateChanged(QMediaPlayer::PlaybackState state)
     }
 }
 
-
-void MainWindow::on_playButton_clicked()
+// protected
+void MainWindow::closeEvent(QCloseEvent *event)
 {
-    play_button_clicked = !play_button_clicked;
-    music_manually_stopped = false;
-    if (play_button_clicked)
-    {
-        audio_player->play();
-        ui->playButton->setIcon(QIcon(":/icons/res/pause_w.png"));
-    }
-    else
-    {
-        audio_player->pause();
-        ui->playButton->setIcon(QIcon(":/icons/res/play_w.png"));
-    }
+    writeSettings();
+    event->accept();
 }
 
-
-void MainWindow::on_stopButton_clicked()
-{
-    // when state changes to stop, <music_manually_stopped>'ll be checked, set it before stop()
-    music_manually_stopped = true;
-    play_button_clicked = false;
-    audio_player->stop();
-    ui->playButton->setIcon(QIcon(":/icons/res/play_w.png"));
-}
-
-
-void MainWindow::on_volumeButton_clicked()
-{
-    volume_button_clicked = !volume_button_clicked;
-    if (volume_button_clicked)
-    {
-        cached_volume = audio_output->volume();
-        audio_output->setVolume(0);
-        ui->volumeButton->setIcon(QIcon(":/icons/res/volume_mute_w.png"));
-        ui->volumeDisplay->setText("0%");
-    }
-    else
-    {
-        audio_output->setVolume(cached_volume);
-        ui->volumeButton->setIcon(QIcon(":/icons/res/volume_w.png"));
-        ui->volumeDisplay->setText(QString::number(static_cast<int>(cached_volume * 100)) + "%");
-    }
-}
-
-
-void MainWindow::on_progressSlider_sliderMoved(int position)
-{
-    audio_player->setPosition(position);
-}
-
-
-void MainWindow::on_volumeSlider_sliderMoved(int position)
-{
-    audio_output->setVolume(volumeConvert(position));
-    ui->volumeDisplay->setText(QString::number(position) + "%");
-    last_position = position;
-}
-
+// private slot
 
 void MainWindow::on_actionOpen_File_triggered()
 {
@@ -165,25 +114,8 @@ void MainWindow::on_actionOpen_File_triggered()
     QFileInfo file_info(file_path);
     if (file_info.absolutePath() != "") default_file_dir = file_info.absolutePath();
     if (file_info.fileName() != "")
-        startPlaying(file_info);
+        startPlayingNew(file_info);
 
-}
-
-void MainWindow::startPlaying(QFileInfo file_info)
-{
-    audio_player->setSource(QUrl::fromLocalFile(file_info.absoluteFilePath()));
-    if (play_button_clicked) ui->playButton->click();
-    ui->playButton->setEnabled(true);
-    ui->playButton->click();
-
-    if (1)
-    {// attempt to read meta data
-        ui->musicNameDisplay->setText("Playing <"+ file_info.fileName() + ">...");
-    }
-    else
-    {
-        ui->musicNameDisplay->setText("Playing <"+ file_info.fileName() + ">...");
-    }
 }
 
 void MainWindow::on_actionImport_Music_Resources_triggered()
@@ -213,22 +145,134 @@ void MainWindow::on_actionImport_Music_Resources_triggered()
     default_import_dir = import_dir;
 }
 
+void MainWindow::on_actionReset_Music_List_triggered()
+{
+    ui->musicList->clear();
+}
 
 void MainWindow::on_actionSet_Appearance_triggered()
 {
     this->setProperty("windowOpacity", 1.0);
 }
 
-// private
-float MainWindow::volumeConvert(int value)
-{// using exponential on volume percent to produce linear changes in perceived loudness
-    if (value < 0) return 0.0f;
-    if (value > 100) return 1.0f;
-    float percent = static_cast<float>(value) / 100.0f;
-    float converted_volume = (qExp<float>(percent) - 1.0f) / (qExp<float>(1.0f) - 1.0f);
-    return converted_volume;
+void MainWindow::on_progressSlider_sliderMoved(int position)
+{
+    audio_player->setPosition(position);
 }
 
+void MainWindow::on_volumeSlider_sliderMoved(int position)
+{
+    audio_output->setVolume(volumeConvert(position));
+    ui->volumeDisplay->setText(QString::number(position) + "%");
+    last_position = position;
+}
+
+void MainWindow::on_playButton_clicked()
+{
+    play_button_clicked = !play_button_clicked;
+    music_manually_stopped = false;
+    if (play_button_clicked)
+    {
+        audio_player->play();
+        ui->playButton->setIcon(QIcon(":/icons/res/pause_w.png"));
+    }
+    else
+    {
+        audio_player->pause();
+        ui->playButton->setIcon(QIcon(":/icons/res/play_w.png"));
+    }
+}
+
+void MainWindow::on_stopButton_clicked()
+{
+    // when state changes to stop, <music_manually_stopped>'ll be checked, set it before stop()
+    music_manually_stopped = true;
+    play_button_clicked = false;
+    audio_player->stop();
+    ui->playButton->setIcon(QIcon(":/icons/res/play_w.png"));
+}
+
+void MainWindow::on_volumeButton_clicked()
+{
+    volume_button_clicked = !volume_button_clicked;
+    if (volume_button_clicked)
+    {
+        cached_volume = audio_output->volume();
+        audio_output->setVolume(0);
+        ui->volumeButton->setIcon(QIcon(":/icons/res/volume_mute_w.png"));
+        ui->volumeDisplay->setText("0%");
+    }
+    else
+    {
+        audio_output->setVolume(cached_volume);
+        ui->volumeButton->setIcon(QIcon(":/icons/res/volume_w.png"));
+        ui->volumeDisplay->setText(QString::number(static_cast<int>(cached_volume * 100)) + "%");
+    }
+}
+
+void MainWindow::on_musicList_itemDoubleClicked(QListWidgetItem* item)
+{
+    int new_item_row = ui->musicList->row(item);
+    play_queue->updatePlayingQueue(new_item_row);
+    play_queue->setCurrent_item_row(new_item_row);
+    ui->forwardButton->click();
+}
+
+void MainWindow::on_forwardButton_clicked()
+{
+    auto* current_item = play_queue->current();
+    auto* next_item = play_queue->next();
+    if (!next_item || !current_item) return;
+    updateItemSelectedUI(current_item, next_item);
+    playListItem(next_item);
+}
+
+void MainWindow::on_backwardButton_clicked()
+{
+    auto* current_item = play_queue->current();
+    auto* pre_item = play_queue->previous();
+    if (!pre_item || !current_item) return;
+    updateItemSelectedUI(current_item, pre_item);
+    playListItem(pre_item);
+}
+
+// play control
+void MainWindow::startPlayingNew(QFileInfo file_info)
+{ // do not modify this function, it's under inspection
+    ui->stopButton->click();
+    audio_player->setSource(QUrl::fromLocalFile(file_info.absoluteFilePath()));
+    if (play_button_clicked) ui->playButton->click();
+    ui->playButton->click();
+    showMusicInfo(file_info);
+}
+
+inline void MainWindow::playListItem(QListWidgetItem* item)
+{
+    QString file_path = item->data(Qt::UserRole).toString();
+    QFileInfo file_info(file_path);
+    startPlayingNew(file_info);
+}
+
+// ui update
+void MainWindow::showMusicInfo(QFileInfo file_info)
+{
+    if (1) // metadata?
+    {// attempt to read meta data
+        ui->musicNameDisplay->setText("Playing <"+ file_info.fileName() + ">...");
+    }
+    else
+    {
+        ui->musicNameDisplay->setText("Playing <"+ file_info.fileName() + ">...");
+    }
+}
+
+inline void MainWindow::updateItemSelectedUI(QListWidgetItem* cur_item, QListWidgetItem* new_item)
+{
+    cur_item->setSelected(false);
+    new_item->setSelected(true);
+}
+
+// save/load settings
 void MainWindow::writeSettings()
 {
     QSettings settings;
@@ -278,105 +322,13 @@ void MainWindow::loadList(QSettings& settings)
     settings.endArray();
 }
 
-void MainWindow::closeEvent(QCloseEvent *event)
-{
-    writeSettings();
-    event->accept();
-}
-
-void MainWindow::setPlayingQueue(int row = 0)
-{
-    if (ui->musicList->count() == 0) return;
-    playing_queue.clear();
-    for (int cnt = 0; cnt < AUTO_QUEUE_BATCH; cnt++)
-    {
-        if (row >= ui->musicList->count()) row = 0;
-        playing_queue.enqueue(ui->musicList->item(row++));
-    }
-}
-
-void MainWindow::setPlayedStack(int row = 0)
-{
-    if (ui->musicList->count() == 0) return;
-    played_stack.clear();
-    for (int cnt = 0; cnt < AUTO_STACK_BATCH; cnt++)
-    {
-        if (row < 0) row = ui->musicList->count() - 1;
-        played_stack.push(ui->musicList->item(row--));
-    }
-}
-
-void MainWindow::on_musicList_itemDoubleClicked(QListWidgetItem* item)
-{
-    // set playing queue from this newly selected item
-    current_item_row = ui->musicList->row(item);
-    setPlayingQueue(current_item_row);
-    qDebug() << "DoubleClicked: Current=>" << current_item_row;
-    playListItem(item);
-}
-
-
-void MainWindow::on_forwardButton_clicked()
-{
-    if (ui->musicList->count() <= 0) return;
-
-    ui->stopButton->click();
-    qDebug() << "ForwardButton: Current=>" << current_item_row << "\n";
-
-    if (playing_queue.empty())
-        setPlayingQueue(current_item_row);
-
-    played_stack.push(ui->musicList->item(current_item_row));
-
-    if (!playing_queue.empty())
-    {
-        QListWidgetItem *next_item = playing_queue.dequeue();
-        QListWidgetItem *cur_item = ui->musicList->item(current_item_row);
-        updateItemSelectedUI(cur_item, next_item);
-        current_item_row = ui->musicList->row(next_item);
-        qDebug() << "ForwardButton: Next=>" << current_item_row << "\n";
-        playListItem(next_item);
-    }
-}
-
-
-void MainWindow::on_backwardButton_clicked()
-{
-    if (ui->musicList->count() <= 0) return;
-
-    ui->stopButton->click();
-    qDebug() << "BackwardButton: Current=>" << current_item_row << "\n";
-
-    if (played_stack.empty())
-        setPlayedStack(current_item_row);
-
-    if (!played_stack.empty())
-    {
-        QListWidgetItem *pre_item = played_stack.pop();
-        QListWidgetItem *cur_item = ui->musicList->item(current_item_row);
-        updateItemSelectedUI(cur_item, pre_item);
-        current_item_row = ui->musicList->row(pre_item);
-        qDebug() << "BackwardButton: Current=>" << current_item_row << "\n";
-        playListItem(pre_item);
-    }
-}
-
-inline void MainWindow::updateItemSelectedUI(QListWidgetItem* cur_item, QListWidgetItem* new_item)
-{
-    cur_item->setSelected(false);
-    new_item->setSelected(true);
-}
-
-inline void MainWindow::playListItem(QListWidgetItem* item)
-{
-    QString file_path = item->data(Qt::UserRole).toString();
-    QFileInfo file_info(file_path);
-    startPlaying(file_info);
-}
-
-
-void MainWindow::on_actionReset_Music_List_triggered()
-{
-    ui->musicList->clear();
+// helper functions
+float MainWindow::volumeConvert(int value)
+{// using exponential on volume percent to produce linear changes in perceived loudness
+    if (value < 0) return 0.0f;
+    if (value > 100) return 1.0f;
+    float percent = static_cast<float>(value) / 100.0f;
+    float converted_volume = (qExp<float>(percent) - 1.0f) / (qExp<float>(1.0f) - 1.0f);
+    return converted_volume;
 }
 

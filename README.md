@@ -2,7 +2,7 @@
 
 ## To Do:dizzy_face::
 - [x] sequence playing
-- [ ] Play queue 
+- [X] Play queue 
 - [ ] List Creating
 - [ ] Dialogs
 - [ ] User Settings
