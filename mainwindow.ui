@@ -129,6 +129,15 @@
          <string notr="true">
 </string>
         </property>
+        <property name="autoScroll">
+         <bool>true</bool>
+        </property>
+        <property name="autoScrollMargin">
+         <number>16</number>
+        </property>
+        <property name="editTriggers">
+         <set>QAbstractItemView::DoubleClicked|QAbstractItemView::EditKeyPressed</set>
+        </property>
         <property name="selectionMode">
          <enum>QAbstractItemView::ExtendedSelection</enum>
         </property>
@@ -208,6 +217,9 @@
          <widget class="QSlider" name="progressSlider">
           <property name="cursor">
            <cursorShape>ClosedHandCursor</cursorShape>
+          </property>
+          <property name="focusPolicy">
+           <enum>Qt::NoFocus</enum>
           </property>
           <property name="styleSheet">
            <string notr="true">QSlider::handle:horizontal {
@@ -461,12 +473,18 @@ border-radius: 4px;
             <height>40</height>
            </size>
           </property>
+          <property name="shortcut">
+           <string>Ctrl+S</string>
+          </property>
          </widget>
         </item>
         <item>
          <widget class="QSlider" name="volumeSlider">
           <property name="cursor">
            <cursorShape>ClosedHandCursor</cursorShape>
+          </property>
+          <property name="focusPolicy">
+           <enum>Qt::NoFocus</enum>
           </property>
           <property name="styleSheet">
            <string notr="true">QSlider {
@@ -611,6 +629,15 @@ border-radius: 4px;
    </property>
   </action>
  </widget>
+ <tabstops>
+  <tabstop>playButton</tabstop>
+  <tabstop>forwardButton</tabstop>
+  <tabstop>backwardButton</tabstop>
+  <tabstop>stopButton</tabstop>
+  <tabstop>volumeButton</tabstop>
+  <tabstop>progressSlider</tabstop>
+  <tabstop>volumeSlider</tabstop>
+ </tabstops>
  <resources>
   <include location="icons.qrc"/>
  </resources>

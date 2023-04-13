@@ -10,6 +10,13 @@ QPushButton:hover {
         border-style: outset;
         padding: 5px;
 }
+QPushButton:focus {
+    outline: none;
+    border: 5px solid #4f87e1;
+    border-radius: 30px;
+    border-style: outset;
+    padding: 5px;
+}
 
 
 QSlider {

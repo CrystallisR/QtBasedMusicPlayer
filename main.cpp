@@ -4,6 +4,10 @@
 
 int main(int argc, char *argv[])
 {
+    QApplication::setApplicationName("myMusicPlayer");
+    QApplication::setOrganizationName("CrystallisR");
+    QSettings::setDefaultFormat(QSettings::IniFormat);
+
     QApplication app(argc, argv);
 
     QFile themeFile( ":css/styles/normalTheme.css" );

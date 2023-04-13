@@ -4,32 +4,31 @@
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
-    , audio_player(new QMediaPlayer(this))
-    , audio_output(new QAudioOutput(this))
     , volume_button_clicked(false)
     , play_button_clicked(false)
     , music_manually_stopped(false)
     , cached_volume(0.0f)
-{  
-    QApplication::setApplicationName("myMusicPlayer");
-    QApplication::setOrganizationName("CrystallisR");
-    QSettings::setDefaultFormat(QSettings::IniFormat);
-
+{
     ui->setupUi(this);
 
     // load settings
     // you should read settings after ui is set up
     // since you may want to initialize some components in ui
     readSettings();
-    play_queue = new PlayQueue(ui->musicList);
 
     // player initialization
-    audio_player->setAudioOutput(audio_output);
+    audio_player = std::unique_ptr<QMediaPlayer>(new QMediaPlayer(this));
+    audio_output = std::unique_ptr<QAudioOutput>(new QAudioOutput(this));
+    play_queue = std::unique_ptr<PlayQueue>(new PlayQueue(ui->musicList));
+    audio_player->setAudioOutput(audio_output.get());
     audio_output->setVolume(volumeConvert(last_position));
 
-    // connect
-    connect(audio_player, &QMediaPlayer::playbackStateChanged, this, &MainWindow::stateChanged);
-    connect(audio_player, &QMediaPlayer::positionChanged, this, &MainWindow::positionChanged);
+
+    // signal&slot connecttion
+    initConnect();
+
+    // set key shortcuts
+    setShortCutsForAll();
 
     // ui setting
     ui->volumeSlider->setValue(last_position);
@@ -39,19 +38,34 @@ MainWindow::MainWindow(QWidget *parent)
     default_music_image = QPixmap(":icons/res/musical_notec.png");
     this->setProperty("windowOpacity", 1.0);
 
-    // set stylesheet
-    // ...
-
+    // other ui componet settings
     ui->playButton->setEnabled(true);
     ui->stopButton->setEnabled(false);
+
+    // set stylesheet
+    // ...
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
-    delete audio_output;
-    delete audio_player;
-    delete play_queue;
+}
+
+void MainWindow::initConnect()
+{
+    connect(audio_player.get(), &QMediaPlayer::playbackStateChanged, this, &MainWindow::stateChanged);
+    connect(audio_player.get(), &QMediaPlayer::positionChanged, this, &MainWindow::positionChanged);
+    // if not using auto connection by ui designer, use below connection
+    // connect(ui->playButton, &QPushButton::clicked, this, &MainWindow::on_playButton_clicked); //...
+}
+
+void MainWindow::setShortCutsForAll()
+{
+    ui->playButton->setShortcut(QKeySequence("Space"));
+    ui->stopButton->setShortcut(QKeySequence("Ctrl+C"));
+    ui->forwardButton->setShortcut(QKeySequence("Ctrl+Right"));
+    ui->backwardButton->setShortcut(QKeySequence("Ctrl+Left"));
+    ui->volumeButton->setShortcut(QKeySequence("Ctrl+O"));
 }
 
 void MainWindow::positionChanged(qint64 position)
@@ -239,6 +253,7 @@ void MainWindow::on_forwardButton_clicked()
     if (!next_item || !current_item) return;
     updateItemSelectedUI(current_item, next_item);
     playListItem(next_item);
+    ui->musicList->scrollToItem(next_item);
 }
 
 void MainWindow::on_backwardButton_clicked()
@@ -248,6 +263,7 @@ void MainWindow::on_backwardButton_clicked()
     if (!pre_item || !current_item) return;
     updateItemSelectedUI(current_item, pre_item);
     playListItem(pre_item);
+    ui->musicList->scrollToItem(pre_item);
 }
 
 // play control

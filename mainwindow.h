@@ -20,6 +20,8 @@
 #include <QCloseEvent>
 #include <QListWidgetItem>
 #include <QMessageBox>
+#include <QShortcut>
+#include <memory>
 #include "playqueue.h"
 
 QT_BEGIN_NAMESPACE
@@ -67,9 +69,9 @@ private slots:
 
 private:
     Ui::MainWindow *ui;
-    QMediaPlayer* audio_player;
-    QAudioOutput* audio_output;
-    PlayQueue* play_queue;
+    std::unique_ptr<QMediaPlayer> audio_player;
+    std::unique_ptr<QAudioOutput> audio_output;
+    std::unique_ptr<PlayQueue> play_queue;
 
     // file settings
     QString default_file_dir;
@@ -84,6 +86,12 @@ private:
     bool play_button_clicked;
     bool music_manually_stopped;
     float cached_volume;
+
+    // usesr interaction settings
+    void setShortCutsForAll();
+
+    // signal and slot connection control
+    void initConnect();
 
     // play control
     void startPlayingNew(QFileInfo file_info);
