@@ -13,8 +13,8 @@ class PlayQueue : public QObject
     Q_OBJECT
     #define HISTORYSIZE 200
     #define QUEUESIZE 200
-    #define AUTO_QUEUE_BATCH 20
-    #define AUTO_STACK_BATCH 20
+    #define AUTO_QUEUE_BATCH 10
+    #define AUTO_STACK_BATCH 10
 
 public:
     explicit PlayQueue(QListWidget* init_play_list, QObject *parent = nullptr);
@@ -23,6 +23,7 @@ public:
     void setPlayList(QListWidget*);
     void updatePlayingQueue(int row = 0);
     void setHistoryStack(int row = 0);
+    void clear();
 
     QListWidgetItem* current();
     QListWidgetItem* next();

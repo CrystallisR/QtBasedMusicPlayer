@@ -23,10 +23,6 @@ MainWindow::MainWindow(QWidget *parent)
     audio_player->setAudioOutput(audio_output.get());
     audio_output->setVolume(volumeConvert(last_position));
 
-
-    // signal&slot connecttion
-    initConnect();
-
     // set key shortcuts
     setShortCutsForAll();
 
@@ -34,7 +30,14 @@ MainWindow::MainWindow(QWidget *parent)
     ui->volumeSlider->setValue(last_position);
     ui->volumeDisplay->setText(QString::number(ui->volumeSlider->value()) + "%");
 
-    setWindowIcon(QIcon(":icons/res/musical_notec.png"));
+    auto appIcon = QIcon(":icons/res/musical_notec.png");
+    tray_icon = std::unique_ptr<QSystemTrayIcon>(new QSystemTrayIcon(this));
+    tray_icon->setIcon(appIcon);
+    tray_icon->setToolTip("Not Playing Now");
+    setTrayIconMenu();
+    tray_icon->show();
+
+    setWindowIcon(appIcon);
     default_music_image = QPixmap(":icons/res/musical_notec.png");
     this->setProperty("windowOpacity", 1.0);
 
@@ -44,6 +47,9 @@ MainWindow::MainWindow(QWidget *parent)
 
     // set stylesheet
     // ...
+
+    // signal&slot connecttion
+    initConnect();
 }
 
 MainWindow::~MainWindow()
@@ -53,8 +59,11 @@ MainWindow::~MainWindow()
 
 void MainWindow::initConnect()
 {
+    // connect audio_player's state with GUI
     connect(audio_player.get(), &QMediaPlayer::playbackStateChanged, this, &MainWindow::stateChanged);
     connect(audio_player.get(), &QMediaPlayer::positionChanged, this, &MainWindow::positionChanged);
+    // set System Tray Icon Interaction
+    connect(tray_icon.get(), &QSystemTrayIcon::activated, this, &MainWindow::trayIconActivated);
     // if not using auto connection by ui designer, use below connection
     // connect(ui->playButton, &QPushButton::clicked, this, &MainWindow::on_playButton_clicked); //...
 }
@@ -107,16 +116,7 @@ void MainWindow::stateChanged(QMediaPlayer::PlaybackState state)
 // protected
 void MainWindow::closeEvent(QCloseEvent *event)
 {
-    QMessageBox exit_box;
-    QIcon window_icon = QIcon(QPixmap(":icons/res/musical_notec.png"));
-    QPixmap display_icon = QPixmap(":icons/res/question_markr1.png");
-    exit_box.setWindowTitle("Exit");
-    exit_box.setWindowIcon(window_icon);
-    exit_box.setIconPixmap(display_icon.scaledToHeight(40));
-    exit_box.setText("<p align='center'>Are You Sure to Exit?");
-    exit_box.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
-    exit_box.setDefaultButton(QMessageBox::Yes);
-    auto ret = exit_box.exec();
+    auto ret = setYesOrNoMessageBox("Are You Sure to Exit?", "Exit");
 
     if (ret == QMessageBox::Yes)
     {
@@ -175,7 +175,12 @@ void MainWindow::on_actionImport_Music_Resources_triggered()
 
 void MainWindow::on_actionReset_Music_List_triggered()
 {
-    ui->musicList->clear();
+    auto ret = setYesOrNoMessageBox("Are You Sure To Clear All Imported Files?", "Reset");
+    if (ret == QMessageBox::Yes)
+    {
+        play_queue->clear();
+        ui->musicList->clear();
+    }
 }
 
 void MainWindow::on_actionSet_Appearance_triggered()
@@ -294,6 +299,8 @@ void MainWindow::showMusicInfo(QFileInfo file_info)
     {
         ui->musicNameDisplay->setText("Playing <"+ file_info.fileName() + ">...");
     }
+    // also show music info in tray icon tooltips
+    tray_icon->setToolTip("Playing <"+ file_info.fileName() + ">...");
 }
 
 inline void MainWindow::updateItemSelectedUI(QListWidgetItem* cur_item, QListWidgetItem* new_item)
@@ -352,6 +359,29 @@ void MainWindow::loadList(QSettings& settings)
     settings.endArray();
 }
 
+void MainWindow::setTrayIconMenu()
+{
+    QAction* quit_action = new QAction("&Quit", this);
+    quit_action->setIcon(QIcon(":icons/res/quit.png"));
+    connect(quit_action, &QAction::triggered, qApp, &QCoreApplication::quit);
+
+    QMenu* tray_menu = new QMenu(this);
+    tray_menu->addAction(quit_action);
+
+    tray_icon->setContextMenu(tray_menu);
+}
+
+void MainWindow::trayIconActivated(QSystemTrayIcon::ActivationReason reason)
+{
+    switch (reason)
+    {
+        case QSystemTrayIcon::Trigger:
+          this->tray_icon->showMessage("Playing Now", "To Be Done", QIcon(":icons/res/star_shining.png"));
+          break;
+        default: ;
+    }
+}
+
 // helper functions
 float MainWindow::volumeConvert(int value)
 {// using exponential on volume percent to produce linear changes in perceived loudness
@@ -360,5 +390,22 @@ float MainWindow::volumeConvert(int value)
     float percent = static_cast<float>(value) / 100.0f;
     float converted_volume = (qExp<float>(percent) - 1.0f) / (qExp<float>(1.0f) - 1.0f);
     return converted_volume;
+}
+
+int MainWindow::setYesOrNoMessageBox(QString message, QString window_title)
+{
+    QMessageBox exit_box;
+
+    exit_box.setWindowTitle(window_title);
+    QIcon window_icon = QIcon(QPixmap(":icons/res/musical_notec.png"));
+    exit_box.setWindowIcon(window_icon);
+
+    QPixmap display_icon = QPixmap(":icons/res/question_markr1.png");
+    exit_box.setIconPixmap(display_icon.scaledToHeight(40));
+
+    exit_box.setText(message);
+    exit_box.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+    exit_box.setDefaultButton(QMessageBox::Yes);
+    return exit_box.exec();
 }
 

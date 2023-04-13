@@ -22,6 +22,7 @@
 #include <QMessageBox>
 #include <QShortcut>
 #include <memory>
+#include <QSystemTrayIcon>
 #include "playqueue.h"
 
 QT_BEGIN_NAMESPACE
@@ -72,6 +73,7 @@ private:
     std::unique_ptr<QMediaPlayer> audio_player;
     std::unique_ptr<QAudioOutput> audio_output;
     std::unique_ptr<PlayQueue> play_queue;
+    std::unique_ptr<QSystemTrayIcon> tray_icon;
 
     // file settings
     QString default_file_dir;
@@ -107,8 +109,13 @@ private:
     void saveList(QSettings& settings);
     void loadList(QSettings& settings);
 
+    // manage system tray Icon
+    void setTrayIconMenu();
+    void trayIconActivated(QSystemTrayIcon::ActivationReason reason);
+
     // helper functions
     float volumeConvert(int value);
+    int setYesOrNoMessageBox(QString message, QString window_title);
 };
 
 #endif // MAINWINDOW_H

@@ -22,5 +22,6 @@
         <file>res/music_notec2.png</file>
         <file>res/reset_list.png</file>
         <file>res/question_markr1.png</file>
+        <file>res/quit.png</file>
     </qresource>
 </RCC>

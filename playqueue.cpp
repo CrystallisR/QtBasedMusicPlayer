@@ -50,6 +50,14 @@ void PlayQueue::setHistoryStack(int row)
     }
 }
 
+void PlayQueue::clear()
+{
+    current_item_row = 0;
+    default_queue.clear();
+    user_added_queue.clear();
+    history_stack.clear();
+}
+
 QListWidgetItem *PlayQueue::current()
 { // return current item being selected
     if (play_list->count() <= 0) return nullptr;
