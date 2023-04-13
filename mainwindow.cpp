@@ -40,11 +40,7 @@ MainWindow::MainWindow(QWidget *parent)
     this->setProperty("windowOpacity", 1.0);
 
     // set stylesheet
-    QString button_style1 = ui->volumeButton->styleSheet();
-
-    for (auto button: \
-    {ui->playButton, ui->stopButton, ui->volumeButton, ui->backwardButton, ui->forwardButton})
-        button->setStyleSheet(button_style1);
+    // ...
 
     ui->playButton->setEnabled(true);
     ui->stopButton->setEnabled(false);
@@ -104,13 +100,6 @@ void MainWindow::closeEvent(QCloseEvent *event)
     exit_box.setWindowIcon(window_icon);
     exit_box.setIconPixmap(display_icon.scaledToHeight(40));
     exit_box.setText("<p align='center'>Are You Sure to Exit?");
-    // set MessageBox style
-    /*
-    QFile MBstyleFile( ":css/styles/messageBox.css" );
-    MBstyleFile.open( QFile::ReadOnly );
-    QString MBstyle( MBstyleFile.readAll() );
-    exit_box.setStyleSheet(MBstyle);
-    */
     exit_box.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
     exit_box.setDefaultButton(QMessageBox::Yes);
     auto ret = exit_box.exec();

@@ -37,8 +37,8 @@
            <colorrole role="Button">
             <brush brushstyle="SolidPattern">
              <color alpha="255">
-              <red>255</red>
-              <green>255</green>
+              <red>234</red>
+              <green>229</green>
               <blue>255</blue>
              </color>
             </brush>
@@ -46,8 +46,8 @@
            <colorrole role="Base">
             <brush brushstyle="SolidPattern">
              <color alpha="255">
-              <red>255</red>
-              <green>255</green>
+              <red>234</red>
+              <green>229</green>
               <blue>255</blue>
              </color>
             </brush>
@@ -55,8 +55,8 @@
            <colorrole role="Window">
             <brush brushstyle="SolidPattern">
              <color alpha="255">
-              <red>255</red>
-              <green>255</green>
+              <red>234</red>
+              <green>229</green>
               <blue>255</blue>
              </color>
             </brush>
@@ -66,8 +66,8 @@
            <colorrole role="Button">
             <brush brushstyle="SolidPattern">
              <color alpha="255">
-              <red>255</red>
-              <green>255</green>
+              <red>234</red>
+              <green>229</green>
               <blue>255</blue>
              </color>
             </brush>
@@ -75,8 +75,8 @@
            <colorrole role="Base">
             <brush brushstyle="SolidPattern">
              <color alpha="255">
-              <red>255</red>
-              <green>255</green>
+              <red>234</red>
+              <green>229</green>
               <blue>255</blue>
              </color>
             </brush>
@@ -84,8 +84,8 @@
            <colorrole role="Window">
             <brush brushstyle="SolidPattern">
              <color alpha="255">
-              <red>255</red>
-              <green>255</green>
+              <red>234</red>
+              <green>229</green>
               <blue>255</blue>
              </color>
             </brush>
@@ -95,8 +95,8 @@
            <colorrole role="Button">
             <brush brushstyle="SolidPattern">
              <color alpha="255">
-              <red>255</red>
-              <green>255</green>
+              <red>234</red>
+              <green>229</green>
               <blue>255</blue>
              </color>
             </brush>
@@ -104,8 +104,8 @@
            <colorrole role="Base">
             <brush brushstyle="SolidPattern">
              <color alpha="255">
-              <red>255</red>
-              <green>255</green>
+              <red>234</red>
+              <green>229</green>
               <blue>255</blue>
              </color>
             </brush>
@@ -113,8 +113,8 @@
            <colorrole role="Window">
             <brush brushstyle="SolidPattern">
              <color alpha="255">
-              <red>255</red>
-              <green>255</green>
+              <red>234</red>
+              <green>229</green>
               <blue>255</blue>
              </color>
             </brush>
@@ -126,95 +126,7 @@
          <enum>Qt::NoFocus</enum>
         </property>
         <property name="styleSheet">
-         <string notr="true">QListWidget {
-	border: 5px solid rgb(184, 175, 247);
-	border-radius: 5px;
-	border-style: solid;
-	background-color:  rgb(255, 255, 255);
-	padding: 1px;
-}
-QListWidget:item {
-	color: rgb(0, 0, 0);
-	border: 1px solid rgb(184, 175, 247);
-	border-radius: 3px;
-	background-color:  rgb(255, 255, 255);
-	padding: 1px;
-}
-QListWidget:item:hover {
-	color: rgb(255, 240, 79);
-	border: 1px solid rgb(184, 175, 247);
-	border-radius: 3px;
-	background-color:  rgb(184, 175, 247);
-	padding: 1px;
-}
-QListWidget:item:selected {
-	color: rgb(255, 240, 79);
-	border: 1px solid rgb(184, 175, 247);
-	border-radius: 3px;
-	background-color:  rgb(184, 175, 247);
-	padding: 1px;
-}
-
-
-QScrollBar:horizontal {
-    background: white;
-    height: 10px;
-    margin: 0px 10px 0px 10px;
-}
-QScrollBar::handle:horizontal {
-    background: white;
-	border: 2px solid rgb(184, 175, 247);
-	border-radius: 5px;
-    min-width: 10px;
-}
-QScrollBar::handle:horizontal:hover {
-    background: rgb(184, 175, 247);
-	border: 2px solid rgb(184, 175, 247);
-	border-radius: 5px;
-    min-width: 10px;
-}
-QScrollBar::add-line:horizontal {
-    background: white;
-    width: 10px;
-    subcontrol-position: right;
-    subcontrol-origin: margin;
-}
-QScrollBar::sub-line:horizontal {
-    background: white;
-    width: 10px;
-    subcontrol-position: left;
-    subcontrol-origin: margin;
-}
-
-QScrollBar:vertical {
-    background: white;
-    width: 10px;
-    margin: 10px 0px 10px 0px;
-}
-QScrollBar::handle:vertical {
-    background: white;
-	border: 2px solid rgb(184, 175, 247);
-	border-radius: 5px;
-    min-width: 10px;
-}
-QScrollBar::handle:vertical:hover {
-    background: rgb(184, 175, 247);
-	border: 2px solid rgb(184, 175, 247);
-	border-radius: 5px;
-    min-height: 10px;
-}
-QScrollBar::add-line:vertical {
-    background: white;
-    height: 10px;
-    subcontrol-position: bottom;
-    subcontrol-origin: margin;
-}
-QScrollBar::sub-line:vertical {
-    background: white;
-    height: 10px;
-    subcontrol-position: top;
-    subcontrol-origin: margin;
-}
+         <string notr="true">
 </string>
         </property>
         <property name="selectionMode">
@@ -298,59 +210,11 @@ QScrollBar::sub-line:vertical {
            <cursorShape>ClosedHandCursor</cursorShape>
           </property>
           <property name="styleSheet">
-           <string notr="true">QSlider {
-    height: 64px;
-}
-
-QSlider::groove:horizontal {
-border: 1px solid #bbb;
-background: white;
-height: 18px;
-border-radius: 4px;
-}
-
-QSlider::sub-page:horizontal {
-background: qlineargradient(x1: 0, y1: 0,    x2: 0, y2: 1,
-    stop: 0 #66e, stop: 1 #bbf);
-background: qlineargradient(x1: 0, y1: 0.2, x2: 1, y2: 1,
-    stop: 0 #bbf, stop: 1 #55f);
-border: 1px solid #777;
-height: 10px;
-border-radius: 4px;
-}
-
-QSlider::add-page:horizontal {
-background: #fff;
-border: 1px solid #777;
-height: 10px;
-border-radius: 4px;
-}
-
-QSlider::handle:horizontal {
+           <string notr="true">QSlider::handle:horizontal {
 image: url(:/icons/res/music_note_r1.png);
 width: 26px;
 margin-top: -2px;
 margin-bottom: -2px;
-border-radius: 4px;
-}
-
-QSlider::handle:horizontal:hover {
-
-}
-
-QSlider::sub-page:horizontal:disabled {
-background: #bbb;
-border-color: #999;
-}
-
-QSlider::add-page:horizontal:disabled {
-background: #eee;
-border-color: #999;
-}
-
-QSlider::handle:horizontal:disabled {
-background: #eee;
-border: 1px solid #aaa;
 border-radius: 4px;
 }</string>
           </property>
@@ -375,6 +239,11 @@ border-radius: 4px;
           <property name="cursor">
            <cursorShape>PointingHandCursor</cursorShape>
           </property>
+          <property name="styleSheet">
+           <string notr="true">QPushButton {
+        background-color: rgb(146, 138, 255);
+}</string>
+          </property>
           <property name="text">
            <string/>
           </property>
@@ -394,6 +263,11 @@ border-radius: 4px;
          <widget class="QPushButton" name="playButton">
           <property name="cursor">
            <cursorShape>PointingHandCursor</cursorShape>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">QPushButton {
+        background-color: rgb(146, 138, 255);
+}</string>
           </property>
           <property name="text">
            <string/>
@@ -415,6 +289,11 @@ border-radius: 4px;
           <property name="cursor">
            <cursorShape>PointingHandCursor</cursorShape>
           </property>
+          <property name="styleSheet">
+           <string notr="true">QPushButton {
+        background-color: rgb(146, 138, 255);
+}</string>
+          </property>
           <property name="text">
            <string/>
           </property>
@@ -434,6 +313,11 @@ border-radius: 4px;
          <widget class="QPushButton" name="stopButton">
           <property name="cursor">
            <cursorShape>PointingHandCursor</cursorShape>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">QPushButton {
+        background-color: rgb(146, 138, 255);
+}</string>
           </property>
           <property name="text">
            <string/>
@@ -561,18 +445,7 @@ border-radius: 4px;
           </property>
           <property name="styleSheet">
            <string notr="true">QPushButton {
-	border: 5px solid #6A5ACD;
-	border-radius: 30px;
-	border-style: outset;
-	background-color:  rgb(146, 138, 255);
-	padding: 5px;
-}
-QPushButton:hover {
-	border: 5px solid #9932CC;
-	border-radius: 30px;
-	border-style: outset;
-	background-color: rgb(146, 138, 255);
-	padding: 5px;
+        background-color: rgb(146, 138, 255);
 }</string>
           </property>
           <property name="text">
@@ -597,60 +470,24 @@ QPushButton:hover {
           </property>
           <property name="styleSheet">
            <string notr="true">QSlider {
-    height: 64px;
+    height: 48px;
 }
 
 QSlider::groove:horizontal {
 border: 1px solid #bbb;
 background: white;
-height: 10px;
-border-radius: 4px;
-}
-
-QSlider::sub-page:horizontal {
-background: qlineargradient(x1: 0, y1: 0,    x2: 0, y2: 1,
-    stop: 0 #66e, stop: 1 #bbf);
-background: qlineargradient(x1: 0, y1: 0.2, x2: 1, y2: 1,
-    stop: 0 #bbf, stop: 1 #55f);
-border: 1px solid #777;
-height: 10px;
-border-radius: 4px;
-}
-
-QSlider::add-page:horizontal {
-background: #fff;
-border: 1px solid #777;
-height: 10px;
+height: 12px;
 border-radius: 4px;
 }
 
 QSlider::handle:horizontal {
-	image: url(:/icons/res/star_shining.png);
-width: 12px;
+image: url(:/icons/res/star_shining.png);
+width: 16px;
 margin-top: -2px;
 margin-bottom: -2px;
 border-radius: 4px;
 }
-
-QSlider::handle:horizontal:hover {
-
-}
-
-QSlider::sub-page:horizontal:disabled {
-background: #bbb;
-border-color: #999;
-}
-
-QSlider::add-page:horizontal:disabled {
-background: #eee;
-border-color: #999;
-}
-
-QSlider::handle:horizontal:disabled {
-background: #eee;
-border: 1px solid #aaa;
-border-radius: 4px;
-}</string>
+</string>
           </property>
           <property name="maximum">
            <number>100</number>
