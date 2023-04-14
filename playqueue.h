@@ -25,6 +25,8 @@ public:
     void setHistoryStack(int row = 0);
     void clear();
 
+    void addToUserQueue();
+
     QListWidgetItem* current();
     QListWidgetItem* next();
     QListWidgetItem* previous();

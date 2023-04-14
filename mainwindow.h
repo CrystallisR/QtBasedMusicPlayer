@@ -75,6 +75,14 @@ private:
     std::unique_ptr<PlayQueue> play_queue;
     std::unique_ptr<QSystemTrayIcon> tray_icon;
 
+    std::unique_ptr<QMenu> music_list_menu;
+    std::unique_ptr<QMenu> tray_menu;
+
+    // menu actions
+    std::unique_ptr<QAction> quit_action;
+    std::unique_ptr<QAction> add_to_queue_action;
+    std::unique_ptr<QAction> remove_from_list_action;
+
     // file settings
     QString default_file_dir;
     QString default_import_dir;
@@ -98,6 +106,8 @@ private:
     // play control
     void startPlayingNew(QFileInfo file_info);
     inline void playListItem(QListWidgetItem* item);
+    void addToPlayQueue();
+    void removeFromPlayList();
 
     // ui update
     void showMusicInfo(QFileInfo file_info);
@@ -109,7 +119,14 @@ private:
     void saveList(QSettings& settings);
     void loadList(QSettings& settings);
 
-    // manage system tray Icon
+    // manage menu actions
+    void initActions();
+
+    // manage context Menu
+    void setListWidgetContextMenu();
+    void showListWidgetContextMenu(const QPoint &pos);
+
+    void setTrayIcon(const QIcon& appIcon);
     void setTrayIconMenu();
     void trayIconActivated(QSystemTrayIcon::ActivationReason reason);
 

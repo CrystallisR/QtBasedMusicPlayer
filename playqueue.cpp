@@ -58,6 +58,16 @@ void PlayQueue::clear()
     history_stack.clear();
 }
 
+void PlayQueue::addToUserQueue()
+{
+    QList<QListWidgetItem*> selected_items = play_list->selectedItems();
+    for (auto item: selected_items)
+    {
+        if (user_added_queue.size() >= QUEUESIZE) break;
+        user_added_queue.enqueue(item);
+    }
+}
+
 QListWidgetItem *PlayQueue::current()
 { // return current item being selected
     if (play_list->count() <= 0) return nullptr;

@@ -26,17 +26,16 @@ MainWindow::MainWindow(QWidget *parent)
     // set key shortcuts
     setShortCutsForAll();
 
+    // set Menu & actions
+    initActions();
+    // initMenus();
+
     // ui setting
     ui->volumeSlider->setValue(last_position);
     ui->volumeDisplay->setText(QString::number(ui->volumeSlider->value()) + "%");
 
     auto appIcon = QIcon(":icons/res/musical_notec.png");
-    tray_icon = std::unique_ptr<QSystemTrayIcon>(new QSystemTrayIcon(this));
-    tray_icon->setIcon(appIcon);
-    tray_icon->setToolTip("Not Playing Now");
-    setTrayIconMenu();
-    tray_icon->show();
-
+    setTrayIcon(appIcon);
     setWindowIcon(appIcon);
     default_music_image = QPixmap(":icons/res/musical_notec.png");
     this->setProperty("windowOpacity", 1.0);
@@ -44,6 +43,7 @@ MainWindow::MainWindow(QWidget *parent)
     // other ui componet settings
     ui->playButton->setEnabled(true);
     ui->stopButton->setEnabled(false);
+    setListWidgetContextMenu();
 
     // set stylesheet
     // ...
@@ -62,8 +62,6 @@ void MainWindow::initConnect()
     // connect audio_player's state with GUI
     connect(audio_player.get(), &QMediaPlayer::playbackStateChanged, this, &MainWindow::stateChanged);
     connect(audio_player.get(), &QMediaPlayer::positionChanged, this, &MainWindow::positionChanged);
-    // set System Tray Icon Interaction
-    connect(tray_icon.get(), &QSystemTrayIcon::activated, this, &MainWindow::trayIconActivated);
     // if not using auto connection by ui designer, use below connection
     // connect(ui->playButton, &QPushButton::clicked, this, &MainWindow::on_playButton_clicked); //...
 }
@@ -288,6 +286,28 @@ inline void MainWindow::playListItem(QListWidgetItem* item)
     startPlayingNew(file_info);
 }
 
+void MainWindow::addToPlayQueue()
+{
+    play_queue->addToUserQueue();
+}
+
+void MainWindow::removeFromPlayList()
+{
+    auto ret = setYesOrNoMessageBox("Are You Sure To Remove The Selected File(s) From Play List?"
+                                    "<br>(Local Files Won't Be Affected)"
+                                    "<br>But Play Queue Will Be Reset"
+                                    ,"Remove Music");
+    if (ret == QMessageBox::Yes)
+    {
+        play_queue->clear();
+        QList<QListWidgetItem*> removed_items = ui->musicList->selectedItems();
+        for (QListWidgetItem* item: removed_items) {
+            ui->musicList->takeItem(ui->musicList->row(item));
+            delete item;
+        }
+    }
+}
+
 // ui update
 void MainWindow::showMusicInfo(QFileInfo file_info)
 {
@@ -359,16 +379,57 @@ void MainWindow::loadList(QSettings& settings)
     settings.endArray();
 }
 
+void MainWindow::initActions()
+{
+    quit_action = std::unique_ptr<QAction>(new QAction("&Quit", this));
+    quit_action->setIcon(QIcon(":icons/res/quit.png"));
+    connect(quit_action.get(), &QAction::triggered, qApp, &QCoreApplication::quit);
+
+    add_to_queue_action = std::unique_ptr<QAction>(new QAction("&Add To Play Queue", this));
+    add_to_queue_action->setIcon(QIcon(":icons/res/add_p1.png"));
+    connect(add_to_queue_action.get(), &QAction::triggered, this, &MainWindow::addToPlayQueue);
+
+    remove_from_list_action = std::unique_ptr<QAction>(new QAction("&Remove From List", this));
+    remove_from_list_action->setIcon(QIcon(":icons/res/remove_cyan1.png"));
+    connect(remove_from_list_action.get(), &QAction::triggered, this, &MainWindow::removeFromPlayList);
+}
+
+void MainWindow::setListWidgetContextMenu()
+{
+    ui->musicList->setContextMenuPolicy(Qt::CustomContextMenu);
+    connect(ui->musicList, &QWidget::customContextMenuRequested,\
+            this, &MainWindow::showListWidgetContextMenu);
+}
+
+void MainWindow::showListWidgetContextMenu(const QPoint &pos)
+{
+    // get global position
+    QPoint global_pos = ui->musicList->mapToGlobal(pos);
+
+    // init & set music list menu with actions
+    music_list_menu = std::unique_ptr<QMenu>(new QMenu(this));
+    music_list_menu->addAction(add_to_queue_action.get());
+    music_list_menu->addAction(remove_from_list_action.get());
+    music_list_menu->exec(global_pos);
+}
+
+void MainWindow::setTrayIcon(const QIcon& appIcon)
+{
+    tray_icon = std::unique_ptr<QSystemTrayIcon>(new QSystemTrayIcon(this));
+    tray_icon->setIcon(appIcon);
+    tray_icon->setToolTip("Not Playing Now");
+    setTrayIconMenu();
+    tray_icon->show();
+    // set System Tray Icon Interaction
+    connect(tray_icon.get(), &QSystemTrayIcon::activated, this, &MainWindow::trayIconActivated);
+}
+
 void MainWindow::setTrayIconMenu()
 {
-    QAction* quit_action = new QAction("&Quit", this);
-    quit_action->setIcon(QIcon(":icons/res/quit.png"));
-    connect(quit_action, &QAction::triggered, qApp, &QCoreApplication::quit);
-
-    QMenu* tray_menu = new QMenu(this);
-    tray_menu->addAction(quit_action);
-
-    tray_icon->setContextMenu(tray_menu);
+    // init & set tray menu
+    tray_menu = std::unique_ptr<QMenu>(new QMenu(this));
+    tray_menu->addAction(quit_action.get());
+    tray_icon->setContextMenu(tray_menu.get());
 }
 
 void MainWindow::trayIconActivated(QSystemTrayIcon::ActivationReason reason)

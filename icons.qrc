@@ -23,5 +23,7 @@
         <file>res/reset_list.png</file>
         <file>res/question_markr1.png</file>
         <file>res/quit.png</file>
+        <file>res/add_p1.png</file>
+        <file>res/remove_cyan1.png</file>
     </qresource>
 </RCC>
