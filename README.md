@@ -4,6 +4,6 @@
 - [x] sequence playing
 - [X] Play queue 
 - [ ] List Creating
-- [ ] Dialogs
+- [X] Dialogs
 - [ ] User Settings
-- [ ] UI Improvement
+- [ ] UI Improvement (some small improvement already)

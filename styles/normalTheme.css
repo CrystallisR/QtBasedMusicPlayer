@@ -18,6 +18,26 @@ QPushButton:focus {
     padding: 5px;
 }
 
+QToolButton {
+        border: 5px solid #6A5ACD;
+        border-radius: 30px;
+        border-style: outset;
+        padding: 5px;
+}
+QToolButton:hover {
+        border: 5px solid #9932CC;
+        border-radius: 30px;
+        border-style: outset;
+        padding: 5px;
+}
+QToolButton:focus {
+    outline: none;
+    border: 5px solid #4f87e1;
+    border-radius: 30px;
+    border-style: outset;
+    padding: 5px;
+}
+
 
 QSlider {
     height: 64px;
@@ -164,3 +184,20 @@ QScrollBar::sub-line:vertical {
     subcontrol-origin: margin;
 }
 
+QMenu {
+    background-color: rgb(234, 229, 255);
+    border: 2px solid rgb(184, 175, 247);
+    border-radius: 4px;
+}
+QMenu:item {
+    background-color: transparent;
+}
+QMenu:item:selected {
+    color: #FFFF33;
+    background-color: #E960A0;
+    border-radius: 4px;
+    border-bottom: 2px solid rgb(184, 175, 247);
+}
+QToolButton::menu-indicator {
+    image: none;
+}

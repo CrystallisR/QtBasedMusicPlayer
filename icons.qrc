@@ -25,5 +25,8 @@
         <file>res/quit.png</file>
         <file>res/add_p1.png</file>
         <file>res/remove_cyan1.png</file>
+        <file>res/loopmodec.png</file>
+        <file>res/loopb.png</file>
+        <file>res/shuffle.png</file>
     </qresource>
 </RCC>

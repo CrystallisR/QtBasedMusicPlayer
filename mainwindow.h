@@ -68,6 +68,8 @@ private slots:
 
     void on_actionReset_Music_List_triggered();
 
+    void on_modeButton_clicked();
+
 private:
     Ui::MainWindow *ui;
     std::unique_ptr<QMediaPlayer> audio_player;
@@ -77,11 +79,18 @@ private:
 
     std::unique_ptr<QMenu> music_list_menu;
     std::unique_ptr<QMenu> tray_menu;
+    std::unique_ptr<QMenu> mode_menu;
 
     // menu actions
     std::unique_ptr<QAction> quit_action;
     std::unique_ptr<QAction> add_to_queue_action;
     std::unique_ptr<QAction> remove_from_list_action;
+    std::unique_ptr<QAction> play_next_action;
+    std::unique_ptr<QAction> play_prev_action;
+    std::unique_ptr<QAction> play_action;
+    std::unique_ptr<QAction> order_loop_action;
+    std::unique_ptr<QAction> random_loop_action;
+    std::unique_ptr<QAction> single_loop_action;
 
     // file settings
     QString default_file_dir;
@@ -108,6 +117,9 @@ private:
     inline void playListItem(QListWidgetItem* item);
     void addToPlayQueue();
     void removeFromPlayList();
+    void setOrderLoopMode();
+    void setSingleLoopMode();
+    void setRandomLoopMode();
 
     // ui update
     void showMusicInfo(QFileInfo file_info);
@@ -121,6 +133,9 @@ private:
 
     // manage menu actions
     void initActions();
+
+    // set tool button
+    void setModeButton();
 
     // manage context Menu
     void setListWidgetContextMenu();

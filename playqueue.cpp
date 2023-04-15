@@ -6,7 +6,7 @@ PlayQueue::PlayQueue(QListWidget* init_play_list, QObject *parent)
     ,current_item_row(0)
     ,play_list(init_play_list)
 {
-
+    generator = std::mt19937(rand_dev());
 }
 
 PlayQueue::~PlayQueue()
@@ -58,6 +58,11 @@ void PlayQueue::clear()
     history_stack.clear();
 }
 
+void PlayQueue::setPlayMode(PQ::PlayMode new_mode)
+{
+    play_mode = new_mode;
+}
+
 void PlayQueue::addToUserQueue()
 {
     QList<QListWidgetItem*> selected_items = play_list->selectedItems();
@@ -81,14 +86,16 @@ QListWidgetItem *PlayQueue::next()
 
     if (play_list->count() <= 0) return next_item;
 
-    if (!user_added_queue.empty())
-    {
-        next_item = user_added_queue.dequeue();
-    }
-    else
-    {
-        if (default_queue.empty()) updatePlayingQueue(current_item_row+1);
-        next_item = default_queue.dequeue();
+    switch (play_mode) {
+    case PQ::PlayMode::Shuffle:
+        next_item = nextRandom();
+        break;
+    case PQ::PlayMode::Single:
+        next_item = nextSame();
+        break;
+    default:
+        next_item = nextOrder();
+        break;
     }
 
     history_stack.push(play_list->item(current_item_row));
@@ -125,9 +132,35 @@ void PlayQueue::setCurrent_item_row(int newCurrent_item_row)
     current_item_row = newCurrent_item_row;
 }
 
+QListWidgetItem *PlayQueue::nextOrder()
+{
+    QListWidgetItem* next_item {nullptr};
 
-// private
+    // if (play_list->count() <= 0) return next_item;
+    if (!user_added_queue.empty())
+    {
+        next_item = user_added_queue.dequeue();
+    }
+    else
+    {
+        if (default_queue.empty()) updatePlayingQueue(current_item_row+1);
+        next_item = default_queue.dequeue();
+    }
+    return next_item;
+}
 
+QListWidgetItem *PlayQueue::nextRandom()
+{
+    default_queue.clear();
+    std::uniform_int_distribution<int> distr(0, play_list->count()-1);
+    int next_row = distr(generator);
+    return play_list->item(next_row);
+}
+
+QListWidgetItem *PlayQueue::nextSame()
+{
+    return play_list->item(current_item_row);
+}
 
 
 

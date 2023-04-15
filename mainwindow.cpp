@@ -44,6 +44,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->playButton->setEnabled(true);
     ui->stopButton->setEnabled(false);
     setListWidgetContextMenu();
+    setModeButton();
 
     // set stylesheet
     // ...
@@ -206,11 +207,15 @@ void MainWindow::on_playButton_clicked()
     {
         audio_player->play();
         ui->playButton->setIcon(QIcon(":/icons/res/pause_w.png"));
+        play_action->setIcon(QIcon(":icons/res/pause.png"));
+        play_action->setText("&Pause");
     }
     else
     {
         audio_player->pause();
         ui->playButton->setIcon(QIcon(":/icons/res/play_w.png"));
+        play_action->setIcon(QIcon(":icons/res/play.png"));
+        play_action->setText("&Play");
     }
 }
 
@@ -269,6 +274,11 @@ void MainWindow::on_backwardButton_clicked()
     ui->musicList->scrollToItem(pre_item);
 }
 
+void MainWindow::on_modeButton_clicked()
+{
+    ui->modeButton->showMenu();
+}
+
 // play control
 void MainWindow::startPlayingNew(QFileInfo file_info)
 { // do not modify this function, it's under inspection
@@ -301,11 +311,30 @@ void MainWindow::removeFromPlayList()
     {
         play_queue->clear();
         QList<QListWidgetItem*> removed_items = ui->musicList->selectedItems();
-        for (QListWidgetItem* item: removed_items) {
+        for (QListWidgetItem* item: removed_items)
+        {
             ui->musicList->takeItem(ui->musicList->row(item));
             delete item;
         }
     }
+}
+
+void MainWindow::setOrderLoopMode()
+{
+    ui->modeButton->setIcon(QIcon(":icons/res/loopmodec.png"));
+    play_queue->setPlayMode(PQ::PlayMode::Order);
+}
+
+void MainWindow::setSingleLoopMode()
+{
+    ui->modeButton->setIcon(QIcon(":icons/res/loopb.png"));
+    play_queue->setPlayMode(PQ::PlayMode::Single);
+}
+
+void MainWindow::setRandomLoopMode()
+{
+    ui->modeButton->setIcon(QIcon(":icons/res/shuffle.png"));
+    play_queue->setPlayMode(PQ::PlayMode::Shuffle);
 }
 
 // ui update
@@ -392,6 +421,41 @@ void MainWindow::initActions()
     remove_from_list_action = std::unique_ptr<QAction>(new QAction("&Remove From List", this));
     remove_from_list_action->setIcon(QIcon(":icons/res/remove_cyan1.png"));
     connect(remove_from_list_action.get(), &QAction::triggered, this, &MainWindow::removeFromPlayList);
+
+    play_next_action = std::unique_ptr<QAction>(new QAction("&Play Next", this));
+    play_next_action->setIcon(QIcon(":icons/res/next.png"));
+    connect(play_next_action.get(), &QAction::triggered, this, &MainWindow::on_forwardButton_clicked);
+
+    play_prev_action = std::unique_ptr<QAction>(new QAction("&Play Last", this));
+    play_prev_action->setIcon(QIcon(":icons/res/back.png"));
+    connect(play_prev_action.get(), &QAction::triggered, this, &MainWindow::on_backwardButton_clicked);
+
+    play_action = std::unique_ptr<QAction>(new QAction(("&Play"), this));
+    play_action->setIcon(QIcon(":icons/res/play.png"));
+    connect(play_action.get(), &QAction::triggered, this, &MainWindow::on_playButton_clicked);
+
+    order_loop_action = std::unique_ptr<QAction>(new QAction(("&Order Loop"), this));
+    order_loop_action->setIcon(QIcon(":icons/res/loopmodec.png"));
+    connect(order_loop_action.get(), &QAction::triggered, this, &MainWindow::setOrderLoopMode);
+
+    single_loop_action= std::unique_ptr<QAction>(new QAction(("&Repeat Once"), this));
+    single_loop_action->setIcon(QIcon(":icons/res/loopb.png"));
+    connect(single_loop_action.get(), &QAction::triggered, this, &MainWindow::setSingleLoopMode);
+
+    random_loop_action = std::unique_ptr<QAction>(new QAction(("&Shuffle"), this));
+    random_loop_action->setIcon(QIcon(":icons/res/shuffle.png"));
+    connect(random_loop_action.get(), &QAction::triggered, this, &MainWindow::setRandomLoopMode);
+}
+
+void MainWindow::setModeButton()
+{
+    mode_menu = std::unique_ptr<QMenu>(new QMenu(this));
+    mode_menu->setWindowFlag(Qt::FramelessWindowHint);
+    mode_menu->setAttribute(Qt::WA_TranslucentBackground);
+    mode_menu->addAction(order_loop_action.get());
+    mode_menu->addAction(single_loop_action.get());
+    mode_menu->addAction(random_loop_action.get());
+    ui->modeButton->setMenu(mode_menu.get());
 }
 
 void MainWindow::setListWidgetContextMenu()
@@ -408,6 +472,8 @@ void MainWindow::showListWidgetContextMenu(const QPoint &pos)
 
     // init & set music list menu with actions
     music_list_menu = std::unique_ptr<QMenu>(new QMenu(this));
+    music_list_menu->setWindowFlag(Qt::FramelessWindowHint);
+    music_list_menu->setAttribute(Qt::WA_TranslucentBackground);
     music_list_menu->addAction(add_to_queue_action.get());
     music_list_menu->addAction(remove_from_list_action.get());
     music_list_menu->exec(global_pos);
@@ -428,6 +494,11 @@ void MainWindow::setTrayIconMenu()
 {
     // init & set tray menu
     tray_menu = std::unique_ptr<QMenu>(new QMenu(this));
+    tray_menu->setWindowFlag(Qt::FramelessWindowHint);
+    tray_menu->setAttribute(Qt::WA_TranslucentBackground);
+    tray_menu->addAction(play_next_action.get());
+    tray_menu->addAction(play_action.get());
+    tray_menu->addAction(play_prev_action.get());
     tray_menu->addAction(quit_action.get());
     tray_icon->setContextMenu(tray_menu.get());
 }
@@ -469,4 +540,6 @@ int MainWindow::setYesOrNoMessageBox(QString message, QString window_title)
     exit_box.setDefaultButton(QMessageBox::Yes);
     return exit_box.exec();
 }
+
+
 
