@@ -95,6 +95,7 @@ private:
     // file settings
     QString default_file_dir;
     QString default_import_dir;
+    QFileInfo cur_file_info;
     int last_position;
 
     // ui settings
@@ -122,7 +123,7 @@ private:
     void setRandomLoopMode();
 
     // ui update
-    void showMusicInfo(QFileInfo file_info);
+    void showMusicInfo(QMediaPlayer::MediaStatus);
     inline void updateItemSelectedUI(QListWidgetItem* cur_item, QListWidgetItem* new_item);
 
     // save/load settings
@@ -148,6 +149,7 @@ private:
     // helper functions
     float volumeConvert(int value);
     int setYesOrNoMessageBox(QString message, QString window_title);
+    void readMusicFileMetaData(QFileInfo file_info);
 };
 
 #endif // MAINWINDOW_H

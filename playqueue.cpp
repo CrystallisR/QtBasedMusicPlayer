@@ -63,6 +63,11 @@ void PlayQueue::setPlayMode(PQ::PlayMode new_mode)
     play_mode = new_mode;
 }
 
+PQ::PlayMode PlayQueue::getPlayMode() const
+{
+    return play_mode;
+}
+
 void PlayQueue::addToUserQueue()
 {
     QList<QListWidgetItem*> selected_items = play_list->selectedItems();

@@ -148,19 +148,31 @@
       <item row="0" column="0">
        <widget class="QLabel" name="musicGraphics">
         <property name="sizePolicy">
-         <sizepolicy hsizetype="Ignored" vsizetype="Ignored">
+         <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
           <horstretch>0</horstretch>
           <verstretch>0</verstretch>
          </sizepolicy>
         </property>
+        <property name="minimumSize">
+         <size>
+          <width>40</width>
+          <height>40</height>
+         </size>
+        </property>
         <property name="maximumSize">
          <size>
-          <width>999</width>
-          <height>999</height>
+          <width>300</width>
+          <height>300</height>
          </size>
         </property>
         <property name="layoutDirection">
          <enum>Qt::LeftToRight</enum>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">QLabel {
+	border: 2px solid  rgb(155, 148, 255);
+	border-radius: 4px;
+}</string>
         </property>
         <property name="text">
          <string/>

@@ -63,6 +63,9 @@ void MainWindow::initConnect()
     // connect audio_player's state with GUI
     connect(audio_player.get(), &QMediaPlayer::playbackStateChanged, this, &MainWindow::stateChanged);
     connect(audio_player.get(), &QMediaPlayer::positionChanged, this, &MainWindow::positionChanged);
+    // after media fully loaded, read its metadata and show infos
+    connect(audio_player.get(), &QMediaPlayer::mediaStatusChanged, this, &MainWindow::showMusicInfo);
+
     // if not using auto connection by ui designer, use below connection
     // connect(ui->playButton, &QPushButton::clicked, this, &MainWindow::on_playButton_clicked); //...
 }
@@ -133,8 +136,8 @@ void MainWindow::closeEvent(QCloseEvent *event)
 void MainWindow::on_actionOpen_File_triggered()
 {
     QString prompt = "Please Select Your Audio File";
-    QString file_format {"ALL (*.mp3 *.wav *.flac *.acc);;"
-                         "MP3 (*.mp3);;WAV (*.wav);;FLAC (*.flac);;AAC (*.acc)"};
+    QString file_format {"ALL (*.mp3 *.wav *.flac);;"
+                         "MP3 (*.mp3);;WAV (*.wav);;FLAC (*.flac)"};
     QString file_dir = default_file_dir == "" ? qApp->applicationDirPath() : default_file_dir;
     QString file_path = QFileDialog::getOpenFileName(this, prompt, file_dir, file_format);
 
@@ -251,7 +254,10 @@ void MainWindow::on_musicList_itemDoubleClicked(QListWidgetItem* item)
     int new_item_row = ui->musicList->row(item);
     play_queue->updatePlayingQueue(new_item_row);
     play_queue->setCurrent_item_row(new_item_row);
+    auto cur_play_mode = play_queue->getPlayMode();
+    play_queue->setPlayMode(PQ::PlayMode::Order);
     ui->forwardButton->click();
+    play_queue->setPlayMode(cur_play_mode);
 }
 
 void MainWindow::on_forwardButton_clicked()
@@ -286,7 +292,7 @@ void MainWindow::startPlayingNew(QFileInfo file_info)
     audio_player->setSource(QUrl::fromLocalFile(file_info.absoluteFilePath()));
     if (play_button_clicked) ui->playButton->click();
     ui->playButton->click();
-    showMusicInfo(file_info);
+    cur_file_info = file_info;
 }
 
 inline void MainWindow::playListItem(QListWidgetItem* item)
@@ -338,19 +344,34 @@ void MainWindow::setRandomLoopMode()
 }
 
 // ui update
-void MainWindow::showMusicInfo(QFileInfo file_info)
+void MainWindow::showMusicInfo(QMediaPlayer::MediaStatus status)
 {
-    if (1) // metadata?
-    {// attempt to read meta data
-        ui->musicNameDisplay->setText("Playing <"+ file_info.fileName() + ">...");
-    }
+    if (status != QMediaPlayer::LoadedMedia) return;
+    QMediaMetaData file_meta_data = audio_player->metaData();
+    // set image
+    QVariant raw_image = file_meta_data.value(QMediaMetaData::ThumbnailImage);
+    QImage cover_image = raw_image.value<QImage>();
+
+    if (!cover_image.isNull())
+        ui->musicGraphics->setPixmap(QPixmap::fromImage(cover_image));
     else
-    {
-        ui->musicNameDisplay->setText("Playing <"+ file_info.fileName() + ">...");
-    }
+        ui->musicGraphics->setPixmap(QPixmap(":icons/res/musical_notec.png"));
+
+    // set music title & author infos
+    QString title = file_meta_data.value(QMediaMetaData::Title).toString();
+    QString author = file_meta_data.value(QMediaMetaData::Author).toString();
+
+    if (!title.isEmpty() && !author.isEmpty())
+        ui->musicNameDisplay->setText(\
+         "Playing " + title + "...<br>Musician ("+ author\
+         + ")<br>File (" + cur_file_info.fileName() + ")");
+    else
+        ui->musicNameDisplay->setText("Playing <"+ cur_file_info.fileName() + ">...");
+
     // also show music info in tray icon tooltips
-    tray_icon->setToolTip("Playing <"+ file_info.fileName() + ">...");
+    tray_icon->setToolTip("Playing <"+ cur_file_info.fileName() + ">...");
 }
+
 
 inline void MainWindow::updateItemSelectedUI(QListWidgetItem* cur_item, QListWidgetItem* new_item)
 {
@@ -539,6 +560,11 @@ int MainWindow::setYesOrNoMessageBox(QString message, QString window_title)
     exit_box.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
     exit_box.setDefaultButton(QMessageBox::Yes);
     return exit_box.exec();
+}
+
+void MainWindow::readMusicFileMetaData(QFileInfo file_info)
+{
+
 }
 
 

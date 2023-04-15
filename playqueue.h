@@ -35,6 +35,7 @@ public:
     void setHistoryStack(int row = 0);
     void clear();
     void setPlayMode(PQ::PlayMode);
+    PQ::PlayMode getPlayMode() const;
 
     void addToUserQueue();
 
