@@ -10,7 +10,8 @@ MainWindow::MainWindow(QWidget *parent)
     , cached_volume(0.0f)
 {
     ui->setupUi(this);
-
+    // init widgetlist first since we need to read settings
+    music_list = std::unique_ptr<ManageList>(new ManageList(ui->musicList));
     // load settings
     // you should read settings after ui is set up
     // since you may want to initialize some components in ui
@@ -43,9 +44,9 @@ MainWindow::MainWindow(QWidget *parent)
     // other ui componet settings
     ui->playButton->setEnabled(true);
     ui->stopButton->setEnabled(false);
-    setListWidgetContextMenu();
+    setMusicListMenu();
+    connectMusicListMenu();
     setModeButton();
-
     // set stylesheet
     // ...
 
@@ -155,23 +156,7 @@ void MainWindow::on_actionImport_Music_Resources_triggered()
                default_import_dir, QFileDialog::DontUseNativeDialog);
     QDir dir(import_dir);
 
-    // Match designated format
-    // QString wildcardExp = QRegularExpression::wildcardToRegularExpression("*.(flac)");
-    static QRegularExpression re(".*.(flac|mp3|wav)", QRegularExpression::CaseInsensitiveOption);
-
-    // register imported files
-    for (const QFileInfo &file : dir.entryInfoList(QDir::Files))
-    {
-        if (!re.match(file.fileName()).hasMatch()) continue;
-        auto items = ui->musicList->findItems(file.fileName(), Qt::MatchExactly);
-        if (!items.isEmpty()) continue;
-
-        QListWidgetItem* item = new QListWidgetItem;
-        item->setIcon(QIcon(":/icons/res/music_notec2.png"));
-        item->setText(file.fileName());
-        item->setData(Qt::UserRole, file.absoluteFilePath());
-        ui->musicList->addItem(item);
-    }
+    music_list->importToList(dir, ".*.(flac|mp3|wav)");
     default_import_dir = import_dir;
 }
 
@@ -181,7 +166,7 @@ void MainWindow::on_actionReset_Music_List_triggered()
     if (ret == QMessageBox::Yes)
     {
         play_queue->clear();
-        ui->musicList->clear();
+        music_list->clear();
     }
 }
 
@@ -251,9 +236,10 @@ void MainWindow::on_volumeButton_clicked()
 
 void MainWindow::on_musicList_itemDoubleClicked(QListWidgetItem* item)
 {
-    int new_item_row = ui->musicList->row(item);
+    int new_item_row = music_list->getRow(item);
     play_queue->updatePlayingQueue(new_item_row);
     play_queue->setCurrent_item_row(new_item_row);
+
     auto cur_play_mode = play_queue->getPlayMode();
     play_queue->setPlayMode(PQ::PlayMode::Order);
     ui->forwardButton->click();
@@ -265,9 +251,8 @@ void MainWindow::on_forwardButton_clicked()
     auto* current_item = play_queue->current();
     auto* next_item = play_queue->next();
     if (!next_item || !current_item) return;
-    updateItemSelectedUI(current_item, next_item);
     playListItem(next_item);
-    ui->musicList->scrollToItem(next_item);
+    music_list->updateUIonItemChange(current_item, next_item);
 }
 
 void MainWindow::on_backwardButton_clicked()
@@ -275,9 +260,8 @@ void MainWindow::on_backwardButton_clicked()
     auto* current_item = play_queue->current();
     auto* pre_item = play_queue->previous();
     if (!pre_item || !current_item) return;
-    updateItemSelectedUI(current_item, pre_item);
     playListItem(pre_item);
-    ui->musicList->scrollToItem(pre_item);
+    music_list->updateUIonItemChange(current_item, pre_item);
 }
 
 void MainWindow::on_modeButton_clicked()
@@ -316,12 +300,7 @@ void MainWindow::removeFromPlayList()
     if (ret == QMessageBox::Yes)
     {
         play_queue->clear();
-        QList<QListWidgetItem*> removed_items = ui->musicList->selectedItems();
-        for (QListWidgetItem* item: removed_items)
-        {
-            ui->musicList->takeItem(ui->musicList->row(item));
-            delete item;
-        }
+        music_list->removeSelectedFromList();
     }
 }
 
@@ -373,12 +352,6 @@ void MainWindow::showMusicInfo(QMediaPlayer::MediaStatus status)
 }
 
 
-inline void MainWindow::updateItemSelectedUI(QListWidgetItem* cur_item, QListWidgetItem* new_item)
-{
-    cur_item->setSelected(false);
-    new_item->setSelected(true);
-}
-
 // save/load settings
 void MainWindow::writeSettings()
 {
@@ -386,7 +359,7 @@ void MainWindow::writeSettings()
     settings.setValue("file/default_dir", default_file_dir);
     settings.setValue("file/default_import_dir", default_import_dir);
     settings.setValue("file/last_volume_pos", last_position);
-    saveList(settings);
+    music_list->saveList(settings, "musicList");
 }
 
 void MainWindow::readSettings()
@@ -395,38 +368,7 @@ void MainWindow::readSettings()
     default_file_dir = settings.value("file/default_dir", "").toString();
     default_import_dir = settings.value("file/default_import_dir", default_file_dir).toString();
     last_position = settings.value("file/last_volume_pos", 25).toInt();
-    loadList(settings);
-}
-
-void MainWindow::saveList(QSettings& settings)
-{
-    settings.beginWriteArray("musicList");
-    for (int row = 0; row < ui->musicList->count(); row++)
-    {
-        settings.setArrayIndex(row);
-        QListWidgetItem* cur_item = ui->musicList->item(row);
-        settings.setValue("musicName", cur_item->text());
-        settings.setValue("musicPath", cur_item->data(Qt::UserRole));
-    }
-    settings.endArray();
-}
-
-void MainWindow::loadList(QSettings& settings)
-{
-    int size = settings.beginReadArray("musicList");
-    for (int row = 0; row < size; row++)
-    {
-        settings.setArrayIndex(row);
-        QString file_name = settings.value("musicName").toString();
-        QString file_path = settings.value("musicPath").toString();
-
-        QListWidgetItem* cur_item = new QListWidgetItem;
-        cur_item->setIcon(QIcon(":/icons/res/music_notec2.png"));
-        cur_item->setText(file_name);
-        cur_item->setData(Qt::UserRole, file_path);
-        ui->musicList->addItem(cur_item);
-    }
-    settings.endArray();
+    music_list->loadList(settings, "musicList");
 }
 
 void MainWindow::initActions()
@@ -479,24 +421,26 @@ void MainWindow::setModeButton()
     ui->modeButton->setMenu(mode_menu.get());
 }
 
-void MainWindow::setListWidgetContextMenu()
+void MainWindow::setMusicListMenu()
 {
-    ui->musicList->setContextMenuPolicy(Qt::CustomContextMenu);
-    connect(ui->musicList, &QWidget::customContextMenuRequested,\
-            this, &MainWindow::showListWidgetContextMenu);
-}
-
-void MainWindow::showListWidgetContextMenu(const QPoint &pos)
-{
-    // get global position
-    QPoint global_pos = ui->musicList->mapToGlobal(pos);
-
-    // init & set music list menu with actions
     music_list_menu = std::unique_ptr<QMenu>(new QMenu(this));
     music_list_menu->setWindowFlag(Qt::FramelessWindowHint);
     music_list_menu->setAttribute(Qt::WA_TranslucentBackground);
     music_list_menu->addAction(add_to_queue_action.get());
     music_list_menu->addAction(remove_from_list_action.get());
+}
+
+void MainWindow::connectMusicListMenu()
+{
+    music_list->getItem_list()->setContextMenuPolicy(Qt::CustomContextMenu);
+    connect(music_list->getItem_list(), &QWidget::customContextMenuRequested,\
+            this, &MainWindow::showMusicListMenu);
+}
+
+void MainWindow::showMusicListMenu(const QPoint &pos)
+{
+    // get global position
+    QPoint global_pos = music_list->getItem_list()->mapToGlobal(pos);
     music_list_menu->exec(global_pos);
 }
 
@@ -561,11 +505,3 @@ int MainWindow::setYesOrNoMessageBox(QString message, QString window_title)
     exit_box.setDefaultButton(QMessageBox::Yes);
     return exit_box.exec();
 }
-
-void MainWindow::readMusicFileMetaData(QFileInfo file_info)
-{
-
-}
-
-
-

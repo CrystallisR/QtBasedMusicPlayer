@@ -12,10 +12,12 @@ CONFIG -= debug_and_release debug_and_release_target
 SOURCES += \
     main.cpp \
     mainwindow.cpp \
+    managelist.cpp \
     playqueue.cpp
 
 HEADERS += \
     mainwindow.h \
+    managelist.h \
     playqueue.h
 
 FORMS += \

@@ -24,6 +24,7 @@
 #include <memory>
 #include <QSystemTrayIcon>
 #include "playqueue.h"
+#include "managelist.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -75,6 +76,8 @@ private:
     std::unique_ptr<QMediaPlayer> audio_player;
     std::unique_ptr<QAudioOutput> audio_output;
     std::unique_ptr<PlayQueue> play_queue;
+    std::unique_ptr<ManageList> music_list;
+    // maybe add a favorite list
     std::unique_ptr<QSystemTrayIcon> tray_icon;
 
     std::unique_ptr<QMenu> music_list_menu;
@@ -129,8 +132,6 @@ private:
     // save/load settings
     void writeSettings();
     void readSettings();
-    void saveList(QSettings& settings);
-    void loadList(QSettings& settings);
 
     // manage menu actions
     void initActions();
@@ -139,8 +140,9 @@ private:
     void setModeButton();
 
     // manage context Menu
-    void setListWidgetContextMenu();
-    void showListWidgetContextMenu(const QPoint &pos);
+    void setMusicListMenu();
+    void connectMusicListMenu();
+    void showMusicListMenu(const QPoint &pos);
 
     void setTrayIcon(const QIcon& appIcon);
     void setTrayIconMenu();
@@ -149,7 +151,6 @@ private:
     // helper functions
     float volumeConvert(int value);
     int setYesOrNoMessageBox(QString message, QString window_title);
-    void readMusicFileMetaData(QFileInfo file_info);
 };
 
 #endif // MAINWINDOW_H
